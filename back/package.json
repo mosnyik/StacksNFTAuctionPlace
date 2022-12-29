@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@stacks/connect": "^7.1.0",
+    "@stacks/transactions": "^6.0.0"
+  }
+}
