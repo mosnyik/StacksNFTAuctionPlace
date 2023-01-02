@@ -7,19 +7,10 @@ import {
 
 import { 
     uintCV, 
-    stringUtf8CV, 
-    standardPrincipalCV,
-    hexToCV,
-    cvToHex,
-    NonFungibleConditionCode,
     createAssetInfo,
-    makeStandardNonFungiblePostCondition,
     makeStandardSTXPostCondition,
-    FungibleConditionCode,
-    bufferCVFromString, 
-    broadcastTransaction, 
+    FungibleConditionCode, 
     AnchorMode,
-    makeContractCall,
     } from "@stacks/transactions";
 import { StacksMocknet } from "@stacks/network";
 import { useState, useEffect } from 'react';
@@ -40,9 +31,6 @@ export default function Home() {
     );
     const [userData, setUserData] = useState({})
     const [loggedIn, setLoggedIn] = useState(false);
-    const [auctionContractName, setAuctionContractName] = useState("auction");
-    const [error, setError] = useState("");
-    const [loading, setLoading] = useState(true);
 
     const authOption = {
         appDetails: {
@@ -151,39 +139,3 @@ export default function Home() {
     </div>
   )
 }
-
- /**
-     * / STX transfer with a standard principal that is the principal that is not a contract/
-     * 
-     * // the user with this contractAddress would perform the transaction
-     * const postConditionAddress = 'STANDARD PRINCIPAL THAT MAKES TRANSFER';
-     * // the contractAddress would transfer and amount >= the specified amount 
-     * const postConditionCode = FungibleConditionCode.GreaterEqual;
-     * // specified amount for the transfer
-     * const postConditionAmount = 12345n;
-     * 
-     * const standardSTXPostCondition = makeStandardSTXPostCondition(
-     *  postConditionAddress,
-     *  postCnditionCode,
-     *  postConditionAmount,
-     * );
-     * 
-     * // so in english language, the above code says, you are about to make a 
-     * // transfer and you br transfering 12,345 STX or more other wise the 
-     * // operation will abort
-     * 
-     * / STX transfer with a standard principal /
-     * 
-     * const contractAddress = 'CONTRACT PRINCIPAL';
-     * const contractName = 'test-contract';
-     * 
-     * const contractSTXPostCondition = makeContractSTXPostCondition(
-     *  contractAddress,
-     *  contractName,
-     *  postContractCode,
-     *  postConditionAmount,
-     * )
-     * 
-     * // the above code is doing the exact same thing, but for a contract 
-     * // as against the user in the firt instance
-     */

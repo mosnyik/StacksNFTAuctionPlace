@@ -2,10 +2,13 @@ import { AppConfig, useConnect, UserSession } from "@stacks/connect-react";
 import {
     uintCV,
     AnchorMode,
+    PostConditionMode,
     makeStandardSTXPostCondition,
     FungibleConditionCode,
     standardPrincipalCV,
     callReadOnlyFunction,
+    tupleCV,
+
 } from "@stacks/transactions";
 import { useCallback, useEffect, useState } from "react";
 import { userSession } from "./ConnectWallet";
@@ -13,12 +16,20 @@ import { StacksMocknet } from "@stacks/network";
 
 
 const PlaceBid = () => {
+      /**
+   * NOTE: this is an STX transfer event,
+   * we are sendeing the STX from the bider to the contract
+   * sender: standardPrincipal
+   * reciever: contractPrincipal
+   * postConditions: standardPrincipalSTXtransfer for contractPrincipal
+   */
     const appConfig = new AppConfig(['publish_data'])
     const userSession = new UserSession({ appConfig})
     const {doContractCall} = useConnect();
     const [mounted, setMounted] = useState(false);
     useEffect(() => setMounted(true), [])
 
+    const [assetId, setAssetId] = useState("")
     const [bidAmount, setBidAmount] = useState(0);
     const [tokenId, setTokeenId] = useState(0);
     const [auctionId, setAuctionId] = useState(0);
@@ -35,74 +46,48 @@ const PlaceBid = () => {
         setAuctionId(e.target.value)
     }
 
+    const handleAssetIdChange = (e) =>{
+        setAssetId(e.target.value)
+    }
+
     const handlePlaceBid = async (e) => {
         e.preventDefault();
+
         // add some code 
         const functionArgs = [
-            uintCV(tokenId), 
-            uintCV(bidAmount * 1000000), 
-            uintCV(auctionId),
+            standardPrincipalCV(assetId),
+            tupleCV({
+                tokenId: uintCV(tokenId), 
+                bidAmount: uintCV(bidAmount * 1000000), 
+                auctionId: uintCV(auctionId),})
         ]
 
-        // post condition variables
-        const postConditionAddress = userSession.loadUserData().profile.stxAddress.testnet;
-        const postConditionCode = FungibleConditionCode.LessEqual;
-        const postConditionAmount = bidAmount * 1000000;
-        
-        // post condition
-        const postConditions = [
-            makeStandardSTXPostCondition(
-                postConditionAddress,
-                postConditionCode,
-                postConditionAmount,
-            )
-        ]
+        // postcondition variables
+       
+        // postcondition
 
         const options = {
             network,
             anchorMode: AnchorMode.Any,
-            contractAddress : "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+            contractAddress: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
             contractName: "auction",
-            fuctionName: "place-a-bid",
+            functionName: "create-auction",
             functionArgs,
-            postConditions,
-            // appDetails: {
-            //     name: "Auction",
-            //     icon: window.location.origin + "/vercel.svg",
-            // },
-            onFinish: (data) => {  
+            PostConditionMode: PostConditionMode.Deny,
+            // postConditions,
+            appDetails: {
+                name: "Auction",
+                icon: window.location.origin + "/vercel.svg",
+            },
+            onFininsh: (data) => {
+                window.alert("Bid placed successfully");
                 console.log("Stacks Transaction:", data.stacksTransaction);
                 console.log("Transaction ID:", data.txId);
                 console.log("Raw transaction:", data.txRaw);
-            },
-            oncancel: () => {
-                console,log("onCancel:", "Transaction was canceled");
-            },
-
+            }
         }
-        await doContractCall(options)
+       await doContractCall(options);
     }
-
-    const nowPlaceABid = useCallback( async () => {
-        if(userSession.isUserSignedIn()){
-            const userAddress = userSession.loadUserData().profile.stxAddress.testnet
-            const options = {
-                contractAddress: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
-                contractName: "auction",
-                functionName: "place-a-bid",
-                network,
-                functionArgs,
-                sendAddress: userAddress
-            };
-
-            const result = await callReadOnlyFunction(options);
-            console.log(result);
-            // if(result.value){
-            //     setHasPosted(true)
-            //     setPost(result.value.data)
-            // }
-        }
-    })
 
     if(!mounted || !userSession.isUserSignedIn()){
         return null
@@ -110,6 +95,12 @@ const PlaceBid = () => {
     return ( 
         <div>
             <form onSubmit={handlePlaceBid} className='lg:w-1/3 sm:w-2/3 '>
+                <div className=' flex items-center border border-gray-600 my-4 mx-4 rounded'>
+                    <div className='flex-shrink-0 bg-gray-600 text-gray-100 text-sm py-2 px-6'>
+                        Asset id  
+                    </div>
+                    <input type="text" value={assetId} id='assetId' onChange={handleAssetIdChange} placeholder="eg 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sip009"  className='appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none' />
+                </div>
                 <div className=' flex items-center border border-gray-600 my-4 mx-4 rounded'>
                     <div  className='flex-shrink-0 bg-gray-600 text-gray-100 text-sm py-2 px-6'>
                         Bid Amount

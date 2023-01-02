@@ -41,13 +41,13 @@ A bider can bid for an NFT they like. Once a bid is placed, the STX is transferr
 
 ### **Setup**
 To start, let's head over to our terminal window and type in this command
-```shell
+```bash
 clarinet new NFTAuction
 ```
 The above line would create and clarity project folder for us and some other important folders we would need for the project.
 
 Let's now create a contract called auction by runnig the following commands in our terminal window
-```shell
+```bash
 cd NFTAuction
 mkdir backend
 cd backend
@@ -64,12 +64,12 @@ Our auction dapp is for NFTs, so for the purpose of this tutorial, we will creat
 
 ### IMPLEMENTING SIP009 TRAIT
 To create an NFT implementing the sip009 trait, we would create a new contract and call it `sip009`. Point your terminal to the NFTAuction directory and run the command to create contract again
-```shell
+```bash
 clarinet contract new sip009
 ```
 Yes, you are right! This would add the sip009.clar file to the contract folder. Next, we would import the trait that we are implimenting.  
 
-```shell
+```bash
 clarinet requirements add SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait
 
 ```
@@ -77,6 +77,7 @@ The command line above adds `[[project.requirements]]
 contract_id = 'SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait'` to our Clarinet.toml file which allows us to tap into the `sip009-traits`.
 
 With that done, let us start building 🛠
+
 At the top of your file, let us [assert conformity](https://book.clarity-lang.org/ch09-02-implementing-traits.html#asserting-trait-conformance) with our sip009 trait which simply means we implementing the specifications of the sip009 contract - that is the functions defined in the trait.
 On the top most of our contract, we would add the line 
 ```Clarity
@@ -101,7 +102,8 @@ To create our NFT, we would use
 (define-data-var token-id-nonce uint u0)
 ```
 The line creates an NFT collection with the name `auctionnfts`.
-The next line defines a variable token-id-nonce of type uint starting with the value of 0 (Note it is written as u0 because it is an unsinged integer) that sets a unique id for each NFT minted.
+
+The next line defines a variable `token-id-nonce` of type uint starting with the value of 0 (Note it is written as u0 because it is an unsinged integer) that sets a unique id for each NFT minted.
 
 To implement the NFT trait, what we need to do is to simply define all the required functions defined in the [official deployed contract](https://explorer.stacks.co/txid/0x80eb693e5e2a9928094792080b7f6d69d66ea9cc881bc465e8d9c5c621bd4d07?chain=mainnet), so we would start with the `get-last-token-id`.
 
@@ -158,7 +160,7 @@ Finally, we would define a mint function which is also a public function that al
 Once the call is made, first, the function sets the token id to be the last token id + 1 then, It would now checks to ensure that the principal calling the contract is the reciever of the token that would be minted
 After that, the next line, try to mint the token, if the token-id already exists, the operation fails and every statemutaion gets reverted, other wise, the last line line runs and sets the token-nonce which is the specific identifier given to the token when created to be th value of the token id an then returns the token id of the minted token.
 
-By now your sip009.clar file should look like this
+By now your `sip009.clar` file should look like this
 
 ```Clarity
 (define-non-fungible-token auctionnfts uint)
@@ -226,15 +228,20 @@ Let's go to our `auction.clar` that we created earlier when we started and impor
 
 In our terminal window, we would run 
 
-```terminal=
+```bash
 clarinet requirements add SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait
 ```
-which would import the trait requirements for using SIP009 and add `[[project.requirements]]
-contract_id = 'SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait'` to our Clarinet.toml file.
+which would import the trait requirements for using SIP009 and add 
+`
+[[project.requirements]]
+contract_id = 'SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait'
+`
+to our Clarinet.toml file.
 Next we would define constants for our project.
 Let's start with,
 
-```Clarity
+```Clarity!
+
 ;; auction-creation errors
 (define-constant err-expiry-not-set (err u1000))
 (define-constant err-start-price-not-set (err u1001))
@@ -266,6 +273,7 @@ The NFTAuction place would have to store some data about the auctions created, f
 This is what our set up would look like 
 
 ```Clarity!
+
 ;; auction
 ;; <add a description here>
 
@@ -406,6 +414,7 @@ Before any auction can be created, the NFT contract MUST be whitelisted first. T
 
 
 ```Clarity!
+
 ;; function for creating an auction
 
 ;; create-auction, take variables:-
@@ -445,13 +454,11 @@ Before any auction can be created, the NFT contract MUST be whitelisted first. T
 (define-read-only (get-auction (auction-id uint)) 
     (map-get? auctions auction-id)
 )
-
-
 ```
 
 We have successfully created `create-auction` feature for our dapp, you can test it if you want by heading over to your terminal pointing to  `NFTAuction/backend` and typing the following
 
-```terminal
+```bash
 clarinet console
 ```
 deploy our contract locally and spin up a bunch of test account with 100M STX for testing, NOTE: the first account would be the deployer account. 
@@ -459,11 +466,11 @@ deploy our contract locally and spin up a bunch of test account with 100M STX fo
 
 
 below the array of accounts, type to mint and auctionnft
-```terminal
+```bash
 (contract-call? .sip009 mint tx-sender)
 ```
 This would call the mint function from the sip009 contract that we deployed and mint it to the caller of the contract you would get a response 
-```terminal
+```bash
 Events emitted
 {"type":"nft_mint_event","nft_mint_event":{"asset_identifier":"ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sip009::auctionnfts","recipient":"ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM","value":"u1"}}
 (ok u1)
@@ -472,18 +479,19 @@ to indicate that the call was successfull.
 
 Now you can make the run the command 
 
-```terminal
+```bash
 (contract-call? .auction set-whitelisted .sip009 true)
 ```
-You would get a response `(ok "NFT whitelisted successfully")` to indicate that the call was successfull.
+You would get a response 
+`(ok "NFT whitelisted successfully")` to indicate that the call was successfull.
 
 Then create-auction
 
-```terminal
+```bash
 (contract-call? .auction create-auction .sip009 {token-id: u1, expiry: u10, start-price: u1000})
 ```
 You would get a response 
-```terminal
+```bash
 Events emitted
 {"type":"nft_transfer_event","nft_transfer_event":{"asset_identifier":"ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sip009::auctionnfts","sender":"ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM","recipient":"ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.auction","value":"u1"}}
 (ok u0)
@@ -491,6 +499,7 @@ Events emitted
  to indicate that the call was successfull.
 
 *Placing a bid*
+
 To place a bid, the bidder would need to call the `place-a-bid` function and pass in the following parameters:-
 * bid amount
 * token id 
@@ -498,6 +507,7 @@ To place a bid, the bidder would need to call the `place-a-bid` function and pas
 * and auction id
 
 ```Clarity!
+
 (define-public (place-a-bid (nft-asset-contract <nft-trait>) (bid-details {token-id: uint, bid-amount: uint, auction-id: uint}) ) 
     (let (
             ;; use the auction-id passed when making the call to 
@@ -542,27 +552,29 @@ To place a bid, the bidder would need to call the `place-a-bid` function and pas
 
 we can test to see if our `place-a-bid` fuction is also fuctioning properly, below the `create-auction` call that we made, we would run the following command. Note that we said the maker can not use the same principal to `place-a-bid` so let's first switch our 'tx-sender' by running 
 
-```terminal
+```bash
 ::set_tx_sender ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC
 ```
 You would get a response `tx-sender switched to ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC` to indicate that the call was successfull.
 
-```terminal
+```bash
 (contract-call? 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.auction place-a-bid 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sip009 {token-id: u1, auction-id: u0, bid-amount: u2000})
 ```
 
-Be very mintful of the `'` before the principal, that is how we indicate a standard principal. Also notice that the 'bid-amount' is greater that the 'start-price', IT MUST HAVE TO BE, otherwise it would return an error, because we specified that the 'bid-amount' must be more than the present highest-bid and we set the 'start-price' to be the 'highest-bid' when we first created the auction. Finaly, note that when calling a contract function from the principal which deployed it, you need not write the identifier in full, hence we used '.auction' in our `create-auction` call but when we call `place-a-bid`  using another principal, we would need to make it complete so we use `'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.auction` and `'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sip009`
+Be very mindful of the `'` before the principal, that is how we indicate a standard principal. Also notice that the 'bid-amount' is greater that the 'start-price', IT MUST HAVE TO BE, otherwise it would return an error, because we specified that the 'bid-amount' must be more than the present highest-bid and we set the 'start-price' to be the 'highest-bid' when we first created the auction. Finaly, note that when calling a contract function from the principal which deployed it, you need not write the identifier in full, hence we used '.auction' in our `create-auction` call but when we call `place-a-bid`  using another principal, we would need to make it complete so we use `'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.auction` and `'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sip009`
 
 You would get a response 
-```terminal
+```bash
 Events emitted
-{"type":"stx_transfer_event","stx_transfer_event":{"sender":"ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC","recipient":"ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.auction","amount":"2000","memo":""}}(ok ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC)
+{"type":"stx_transfer_event","stx_transfer_event":{"sender":"ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC","recipient":"ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.auction","amount":"2000","memo":""}}
+(ok ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC)
 ``` 
 to indicate that the call was successfull.
 
 Repeat the process for two or three more principal so you can have a couple of bids to try with when you want to 'settle-auction' and 'request-refund'
 
 *Bid fulfilment*
+
 Once the bid time is up, the highest bider can claim their NFT by providing 
 * the contract identifier of the NFT they won
 * the auction id of the auction the NFT was listed in
@@ -734,31 +746,14 @@ this would install tailwind css library that we would use for styling the page.
 
 Now you can replace the code in your *index.js* file with 
 
-***Index.js***
+***Index.js page***
 
 ```javascript
 import NavBar from '../components/NavBar'
 import MintNFT from '../components/MintSIP009';
-// import { AppConfig, UserSession, showConnect} from '@stacks/connect'
+
 
 export default function Home() {
-  // const appConfig = new AppConfig(['publish_data'])
-  // const userSession = new UserSession ({appConfig})
-
-  // function to connect our statcks wallet
-//   function authenticate() {-
-//     showConnect({
-//         appDetails: {
-//             name: "NFT Auction Place",
-//             icon: "https://assets.website-files.com/618b0aafa4afde65f2fe38fe/618b0aafa4afde2ae1fe3a1f_icon-isotipo.svg",
-//         },
-//         redirectTo: "/",
-//         onFinish: () => {
-//             window.location.reload();
-//         },
-//         userSession,
-//     });
-// }
   return (
     <div>
       <NavBar />
@@ -790,7 +785,7 @@ Just a regular component that retuns some texts to welcome our user and a MintNF
 Now let's create a components folder inside our fronend folder inside which we can create
 *NavBar.js* and paste the following codes
 
-***NavBar.js***
+***NavBar.js component***
 
 ```javascript
 import Link from 'next/link'
@@ -883,7 +878,7 @@ export default NavBar;
 ```
 Here also nothing gang-aang is happening ( which means nothing serious is happening), it is just a regular component that retuns some clickable texts in the navbar and a button that allows user connect and move around the platform easily.
 
-***ConnectWallet.js*** 
+***ConnectWallet.js component*** 
 
 ```javascript
 import React, { useEffect, useState } from "react";
@@ -951,7 +946,7 @@ export default ConnectWallet;
 ```
 What is goin on in the *connectWallet* component, it is basically just authenticating the user, is user is not logged in, they get a pop up to log into their web wallet or downlaod one, if logged in, the also have a chance to disconnect if they want
 
-***MintSIP009.js***
+***MintSIP009.js component***
 
 ```javascript
 import { AppConfig, UserSession } from '@stacks/connect';
@@ -1031,33 +1026,33 @@ export default MintNFT;
 ```
 Here too, not so much is going on, you know we define about four fuctions in the `sip009.clar` when we wrote our smart contract, well we ar only interested in the mint function, and that is what we hooked up to.
 
-***WhitelistNFT.js***
+***WhitelistNFT.js component***
 
 ```
 WhitelistNFT component code
 ```
 
 
-***CreateAuction.js***
+***CreateAuction.js component***
 
 ```
 CreateAuction component code
 ```
 
 
-***PlaceBid.js***
+***PlaceBid.js component***
 
 ```
 PlaceBid component code
 ```
 
-***SettleAuction.js***
+***SettleAuction.js component***
 
 ```
 SettleAuction component code
 ```
 
-***RequestRefund.js***
+***RequestRefund.js component***
 
 ```
 RequestRefund component code
@@ -1065,7 +1060,7 @@ RequestRefund component code
 
 Now let's create the other pages, go into the pages folder and create 
 
-***auction.js***
+***auction.js page***
 
 This is our create auction page
 
@@ -1165,11 +1160,152 @@ export default function Home() {
 }
 ```
 
-***bid.js***
+***bid.js page***
 
 This would be the bids page
-```
-RequestRefund component code
+
+```javascript
+import NavBar from '../components/NavBar'
+import {
+    AppConfig,
+    UserSession,
+    openContractCall,
+} from "@stacks/connect";
+
+import { 
+    uintCV, 
+    createAssetInfo,
+    makeStandardSTXPostCondition,
+    FungibleConditionCode, 
+    AnchorMode,
+    } from "@stacks/transactions";
+import { StacksMocknet } from "@stacks/network";
+import { useState, useEffect } from 'react';
+import PlaceBid from '../components/PlaceABid';
+import { Connect, } from "@stacks/connect-react";
+
+
+
+export default function Home() {
+    const appConfig = new AppConfig(["publish_data"]);
+    const userSession = new UserSession({ appConfig });
+
+    const [bidAmount, setBidAmount] = useState(0)
+    const [auctionId, setAuctionId] = useState(0)
+    const [tokenId, setTokenId] = useState(0)
+    const [auctionContractAddress, setAuctionContractAddress] = useState(
+        "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"
+    );
+    const [userData, setUserData] = useState({})
+    const [loggedIn, setLoggedIn] = useState(false);
+
+    const authOption = {
+        appDetails: {
+          name: 'auction',
+          icon: 'https://assets.website-files.com/618b0aafa4afde65f2fe38fe/618b0aafa4afde2ae1fe3a1f_icon-isotipo.svg',
+        },
+        redirectTo: '/',
+        userSession: userSession,
+      }
+
+    const network = new StacksMocknet();
+
+    const handleBidAmountChange = (e) => {
+        setBidAmount(e.target.value);
+      };
+
+    const handleAuctionIdChange = (e) => {
+        setAuctionId(e.target.value);
+          };
+
+    const handleTokenIdChange = (e) => {
+        setTokenId(e.target.value);
+      };
+
+    const placeBid =  async (e) =>{
+        e.preventDefault();
+        const functionArgs = [ 
+            uintCV(tokenId), 
+            uintCV(bidAmount * 1000000), 
+            uintCV(auctionId),
+        ];
+
+        const postConditionAddress = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM';
+        const stxConditionCode = FungibleConditionCode.GreaterEqual;
+        const stxConditionAmount = bidAmount * 1000000;
+        const assetAddress = 'SP62M8MEFH32WGSB7XSF9WJZD7TQB48VQB5ANWSJ';
+        const assetContractName = 'auction';
+        const fungibleAssetInfo = createAssetInfo(assetAddress, assetContractName);
+
+        const postConditions = [
+
+            makeStandardSTXPostCondition(
+                postConditionAddress,
+                stxConditionCode,
+                stxConditionAmount,
+                fungibleAssetInfo
+               )
+         ];
+
+        const options = {
+            contractAddress: auctionContractAddress,
+            contractName: "auction",
+            functionName: "place-a-bidsr",
+            functionArgs,
+            network,
+            postConditions,
+            anchorMode: AnchorMode.Any,
+            appDetails: {
+                name: "Auction",
+                icon: window.location.origin + "/vercel.svg",
+            },
+            onFinish: (data) => {
+                // console.log(data)
+                console.log("Stacks Transaction:", data.stacksTransaction);
+                console.log("Transaction ID:", data.txId);
+                console.log("Raw transaction:", data.txRaw);
+            },
+        }
+    
+       await openContractCall(options);
+
+    }
+    useEffect(() => {
+        if (userSession.isSignInPending()) {
+          userSession.handlePendingSignIn().then((userData) => {
+            setUserData(userData)
+          })
+        } else if (userSession.isUserSignedIn()) {
+          setLoggedIn(true)
+          setUserData(userSession.loadUserData())
+        }
+      }, [])
+
+  return (
+    <div>
+      <NavBar />
+      <div className='py-16 '>
+            <div>
+                <h2 className='px-4 pb-6 font-bold text-xl'>
+                    Place a bid, the highest bidder gets the NFT
+                </h2>
+                <p className='px-4 pb-4'>
+                    Note: Once you place a bid, you can not widraw until the auction is over. <br/>
+                    However you can request a refund if you did not win the bid
+                </p>
+            </div>
+
+             {/*
+            implimentation of whitelist
+             */}
+            <Connect authOptions={authOption}>
+            < PlaceBid />
+            </Connect>
+
+      </div>
+    </div>
+  )
+}
 ```
 Congratulations, you have created a full stack dapp for an NFT Auction place, this by no means is an implemetation that would be suitable for an enterprise solution. It is intended to serve as a mere example for illustrating how to use Clarity to create smart contract and stack.js to hook the smart contract to a frontend. If you found value, you can follow me on social @mosnyik. 
 Thank you for your time.

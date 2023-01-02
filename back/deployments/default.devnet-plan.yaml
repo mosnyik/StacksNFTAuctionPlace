@@ -27,7 +27,7 @@ plan:
         - contract-publish:
             contract-name: auction
             expected-sender: ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM
-            cost: 110570
+            cost: 89690
             path: "contracts\\auction.clar"
             anchor-block-only: true
             clarity-version: 1

@@ -37,6 +37,7 @@ const MintNFT = () => {
             },
             onFinish: (data) => {
                 // console.log(data)
+                window.alert(`NFT minted successfully`)
                 console.log("Stacks Transaction:", data.stacksTransaction);
                 console.log("Transaction ID:", data.txId);
                 console.log("Raw transaction:", data.txRaw);
@@ -56,3 +57,55 @@ const MintNFT = () => {
 }
  
 export default MintNFT;
+
+// const functionArgs = [ 
+    //     stringUtf8CV(assetId), 
+    //     uintCV(tokenId), 
+    //     uintCV(startPrice * 1000000), 
+    //     uintCV(auctionDuration),
+    // ];
+
+    // const postConditionAddress = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'
+    // const nftPostConditionCode = NonFungibleConditionCode.Sends;
+    // const assetContractName = 'sip009'
+    // const assetName = 'auctionnft'
+    // const assetAddress = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"
+    // const tokenAssetName = bufferCVFromString('auctionnft')
+    // const nonFungibleAssetInfo = createAssetInfo(
+    //         assetAddress,
+    //         assetContractName,
+    //         assetName
+    // )
+
+    // const postConditions = [
+    //     makeStandardNonFungiblePostCondition(
+    //         postConditionAddress,
+    //         nftPostConditionCode,
+    //         nonFungibleAssetInfo,
+    //         tokenAssetName
+    //         ),
+        
+    // ]
+    
+  //   const options = {
+  //       network,
+  //       anchorMode: AnchorMode.Any,
+  //       contractAddress: auctionContractAddress ,
+  //       contractName: "auction",
+  //       functionName: "create-auction",
+  //       functionArgs,
+  //       postConditionMode: PostConditionMode.Deny,
+  //       // postConditions,
+        
+  //       appDetails: {
+  //           name: "Auction",
+  //           icon: window.location.origin + "/vercel.svg",
+  //       },
+  //       onFinish: (data) => {
+  //           // console.log(data)
+  //           console.log("Stacks Transaction:", data.stacksTransaction);
+  //           console.log("Transaction ID:", data.txId);
+  //           console.log("Raw transaction:", data.txRaw);
+  //       },
+  //   }
+  //  const tx = await doContractCall(options);

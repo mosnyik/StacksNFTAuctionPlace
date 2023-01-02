@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { useConnect, Connect } from "@stacks/connect-react";
+import { openContractCall, useConnect, } from "@stacks/connect-react";
 import {
   AnchorMode,
   PostConditionMode,
-  stringUtf8CV,
   uintCV,
   NonFungibleConditionCode,
   bufferCVFromString,
   createAssetInfo,
   makeStandardNonFungiblePostCondition,
+  standardPrincipalCV,
+  StacksMessageType,
+  tupleCV
 } from "@stacks/transactions";
-import {
-    AppConfig,
-    UserSession,
-    showConnect,
-    openContractCall,
-  } from '@stacks/connect'
 import { userSession } from "./ConnectWallet";
 import { StacksMocknet } from "@stacks/network";
 
 const CreateAuction = () => {
+  /**
+   * NOTE: this is an NFT transfer event,
+   * we are sendeing the NFT fro the maker to the contract
+   * sender: standardPrincipal
+   * reciever: contractPrincipal
+   * postConditions: standardNonFunginbleTransfer for contractPrincipal
+   */
   const { doContractCall } = useConnect();
 
   const [mounted, setMounted] = useState(false);
@@ -32,10 +35,12 @@ const CreateAuction = () => {
     const [auctionContractAddress, setAuctionContractAddress] = useState(
         "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"
     );
+    // const assetName = "auctionnft";
+    // const contractName = "sip009";
 
     const network = new StacksMocknet();
 
-    const handleAssetidChange = (e) => {
+    const handleAssetIdChange = (e) => {
         setAssetId(e.target.value);
       };
 
@@ -52,27 +57,31 @@ const CreateAuction = () => {
       };
 
   const createAuction= async (event) => {
-
     event.preventDefault();
+    const address = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"
+   
     const functionArgs = [ 
-        stringUtf8CV('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'), 
-        uintCV(tokenId), 
-        uintCV(startPrice * 1000000), 
-        uintCV(auctionDuration),
+        standardPrincipalCV(assetId),
+        tupleCV({
+          tokenId: uintCV(tokenId), 
+          startPrice: uintCV(startPrice * 1000000), 
+          auctionDuration: uintCV(auctionDuration),})
     ];
 
+    const assetAddress = address
     const postConditionAddress = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'
-    const nftPostConditionCode = NonFungibleConditionCode.DoesNotSend;
+    const nftPostConditionCode = NonFungibleConditionCode.Sends;
     const assetContractName = 'sip009'
-    const assetName = 'sip009'
-    const assetAddress = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"
-    const tokenAssetName = bufferCVFromString('sip009')
+    const assetName = 'auctionnft'
+    const tokenAssetName = bufferCVFromString('auctionnft')
+    const type = StacksMessageType.AssetInfo
     const nonFungibleAssetInfo = createAssetInfo(
             assetAddress,
             assetContractName,
-            assetName
+            assetName,
+            type
     )
-
+  
     const postConditions = [
         makeStandardNonFungiblePostCondition(
             postConditionAddress,
@@ -92,7 +101,6 @@ const CreateAuction = () => {
         functionArgs,
         postConditionMode: PostConditionMode.Deny,
         postConditions,
-        
         appDetails: {
             name: "Auction",
             icon: window.location.origin + "/vercel.svg",
@@ -104,8 +112,8 @@ const CreateAuction = () => {
             console.log("Raw transaction:", data.txRaw);
         },
     }
-   const tx = await doContractCall(options);
- };
+    await doContractCall(options);
+  };
 
   if (!mounted || !userSession.isUserSignedIn()) {
     return null;
@@ -118,7 +126,7 @@ const CreateAuction = () => {
                 <div className='flex-shrink-0 bg-gray-600 text-gray-100 text-sm py-2 px-6'>
                     Asset id  
                 </div>
-                <input type="text" value={assetId} id='assetId' onChange={handleAssetidChange} placeholder="eg 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sip009"  className='appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none' />
+                <input type="text" value={assetId} id='assetId' onChange={handleAssetIdChange} placeholder="eg 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sip009"  className='appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none' />
             </div>
             
             <div className=' flex items-center border border-gray-600 my-4 mx-4 rounded'>

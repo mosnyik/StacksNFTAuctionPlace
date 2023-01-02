@@ -1,27 +1,8 @@
 import NavBar from '../components/NavBar'
 import MintNFT from '../components/MintSIP009';
-// import { AppConfig, UserSession, showConnect} from '@stacks/connect'
-
 
 
 export default function Home() {
-  // const appConfig = new AppConfig(['publish_data'])
-  // const userSession = new UserSession ({appConfig})
-
-  // function to connect our statcks wallet
-//   function authenticate() {-
-//     showConnect({
-//         appDetails: {
-//             name: "NFT Auction Place",
-//             icon: "https://assets.website-files.com/618b0aafa4afde65f2fe38fe/618b0aafa4afde2ae1fe3a1f_icon-isotipo.svg",
-//         },
-//         redirectTo: "/",
-//         onFinish: () => {
-//             window.location.reload();
-//         },
-//         userSession,
-//     });
-// }
   return (
     <div>
       <NavBar />

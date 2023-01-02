@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { Connect, useConnect } from "@stacks/connect-react";
-import { StacksTestnet,  StacksMocknet } from "@stacks/network";
+import {  useConnect } from "@stacks/connect-react";
+import {  StacksMocknet } from "@stacks/network";
 import {
   AnchorMode,
-  PostConditionMode,
+   PostConditionMode,
   NonFungibleConditionCode,
   bufferCVFromString,
   createAssetInfo,
   makeStandardNonFungiblePostCondition,
-  stringUtf8CV,
+  standardPrincipalCV,
+  StacksMessageType, 
+  trueCV,  
 } from "@stacks/transactions";
+
 import { userSession } from "./ConnectWallet";
 
 const WhitelistNFT = () => {
@@ -22,40 +25,39 @@ const WhitelistNFT = () => {
   const handleAssetWhitelistChange = (e) => {
     setAssetWhitelist(e.target.value);
   };
-  const [auctionContractAddress, setAuctionContractAddress] = useState(
-    "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"
-);
-const [auctionContractName, setAuctionContractName] = useState("auction");
-const functionArgs = [ 
-    stringUtf8CV('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'),
-];
+
 const network = new StacksMocknet();
 
-
-
-const whitelistNFT = async (e) => {
+const setWhitelistNFT = async (e) => {
     e.preventDefault();
+    const address = assetWhitelist
     const functionArgs = [ 
-        stringUtf8CV('ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'),
+      standardPrincipalCV(
+        assetWhitelist
+    ),
+    trueCV(),
     ];
 
-    const postConditionAddress = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'
-    const assetAddress = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'
+    // post condition values
+    const postConditionAddress = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'  
+    const assetAddress = address
     const postConditionCode = NonFungibleConditionCode.DoesNotSend;
-    const assetContractName = 'sip009'
-    const assetName = 'sip009'
-    const tokenAssetName = bufferCVFromString('sip009')
+    const assetContractName = "sip009"
+    const assetName = 'auctionnfts'
+    const tokenAssetName = bufferCVFromString('auctionnfts')
+    const type = StacksMessageType.AssetInfo
     const nonFungibleAssetInfo = createAssetInfo (
         assetAddress,
         assetContractName,
-        assetName
+        assetName,
+        type
         )
-
+       
+    // postconditions
     const postConditions = [
         makeStandardNonFungiblePostCondition(
             postConditionAddress,
             postConditionCode,
-            postConditionAddress,
             nonFungibleAssetInfo,
             tokenAssetName
             ),
@@ -64,74 +66,28 @@ const whitelistNFT = async (e) => {
     const options = {
         network,
         anchorMode: AnchorMode.Any,
-        contractAddress: auctionContractAddress,
+        contractAddress: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
         contractName: "auction",
         functionName: "set-whitelisted",
         functionArgs,
+        PostConditionMode: PostConditionMode.Deny,
         postConditions,
-        
         appDetails: {
             name: "Auction",
             icon: window.location.origin + "/vercel.svg",
         },
         onFinish: (data) => {
+          window.alert("Contract Whitelisted, you can place a bid now");
             // console.log(data)
             console.log("Stacks Transaction:", data.stacksTransaction);
             console.log("Transaction ID:", data.txId);
             console.log("Raw transaction:", data.txRaw);
         },
     }
+   
      await doContractCall(options);
    
 }
-
-// function setWhitelist (assetWhitelist) {
-//   const { doContractCall } = useConnect();
-
-  
-//  doContractCall({
-//        postConditions: [
-//           makeStandardNonFungiblePostCondition(
-//             PostConditionAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-//             assetAddress: 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM',
-//             PostConditionCode: NonFungibleConditionCode.DoesNotSend,
-//             assetContractName: 'sip009',
-//             assetName: 'sip009',
-//             tokenAssetName: bufferCVFromString('sip009'),
-//            nonFungibleAssetInfo: createAssetInfo (
-//                assetAddress,
-//                assetContractName,
-//                assetName
-//                ),
-//               nonFungibleAssetInfo,
-//               tokenAssetName
-//               ),
-//                               ],
-      
-//        options: {
-//           network,
-//           anchorMode: AnchorMode.Any,
-//           contractAddress: auctionContractAddress,
-//           contractName: "auction",
-//           functionName: "set-whitelisted",
-//           functionArgs,
-//           postConditions,
-          
-//           // appDetails: {
-//           //     name: "Auction",
-//           //     icon: window.location.origin + "/vercel.svg",
-//           // },
-//           onFinish: (data) => {
-//               // console.log(data)
-//               console.log("Stacks Transaction:", data.stacksTransaction);
-//               console.log("Transaction ID:", data.txId);
-//               console.log("Raw transaction:", data.txRaw);
-//           },
-//       }
-// })
-
-// }
-  
 
   if (!mounted || !userSession.isUserSignedIn()) {
     return null;
@@ -141,7 +97,7 @@ const whitelistNFT = async (e) => {
 
     <div>
 
-    <form onSubmit={whitelistNFT} className='lg:w-1/3 sm:w-2/3 '>
+    <form onSubmit={setWhitelistNFT} className='lg:w-1/3 sm:w-2/3 '>
                 <div className=' flex items-center border border-gray-600 my-4 mx-4 rounded'>
                     <div className='flex-shrink-0 bg-gray-600 text-gray-100 text-sm py-2 px-6'>
                         Asset id  
@@ -167,3 +123,7 @@ const whitelistNFT = async (e) => {
 };
 
 export default WhitelistNFT;
+
+  // // construct principal clarity values
+  // const spCV = standardPrincipalCV(address);
+  // const cpCV = contractPrincipalCV(address, contractName);
