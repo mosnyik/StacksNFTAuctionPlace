@@ -1,17 +1,16 @@
 import { AppConfig, useConnect, UserSession } from "@stacks/connect-react";
 import {
+    FungibleConditionCode,
+    makeStandardSTXPostCondition,
     uintCV,
     AnchorMode,
     PostConditionMode,
-    makeStandardSTXPostCondition,
-    FungibleConditionCode,
-    standardPrincipalCV,
-    callReadOnlyFunction,
+    contractPrincipalCV,
     tupleCV,
 
 } from "@stacks/transactions";
-import { useCallback, useEffect, useState } from "react";
-import { userSession } from "./ConnectWallet";
+import {useEffect, useState } from "react";
+
 import { StacksMocknet } from "@stacks/network";
 
 
@@ -52,29 +51,45 @@ const PlaceBid = () => {
 
     const handlePlaceBid = async (e) => {
         e.preventDefault();
-
+        const address = assetId
+        
+        // postcondition variables
+        const postConditionAddress = 
+        userSession.loadUserData().profile.stxAddress.testnet
+        const stxConditionCode = FungibleConditionCode.LessEqual;
+        const assetContractName = 'sip009'
+        const stxConditionAmount = bidAmount * 1000000
+        
         // add some code 
         const functionArgs = [
-            standardPrincipalCV(assetId),
+            contractPrincipalCV(
+                address,
+                assetContractName
+                ),
             tupleCV({
-                tokenId: uintCV(tokenId), 
-                bidAmount: uintCV(bidAmount * 1000000), 
-                auctionId: uintCV(auctionId),})
+                "token-id": uintCV(tokenId), 
+                "bid-amount": uintCV(bidAmount * 1000000), 
+                "auction-id": uintCV(auctionId),})
         ]
 
-        // postcondition variables
-       
         // postcondition
+        const postConditions = [
+
+        makeStandardSTXPostCondition(
+            postConditionAddress,
+            stxConditionCode,
+            stxConditionAmount
+            )]
 
         const options = {
             network,
             anchorMode: AnchorMode.Any,
             contractAddress: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
             contractName: "auction",
-            functionName: "create-auction",
+            functionName: "place-a-bid",
             functionArgs,
             PostConditionMode: PostConditionMode.Deny,
-            // postConditions,
+            postConditions,
             appDetails: {
                 name: "Auction",
                 icon: window.location.origin + "/vercel.svg",
@@ -99,7 +114,7 @@ const PlaceBid = () => {
                     <div className='flex-shrink-0 bg-gray-600 text-gray-100 text-sm py-2 px-6'>
                         Asset id  
                     </div>
-                    <input type="text" value={assetId} id='assetId' onChange={handleAssetIdChange} placeholder="eg 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sip009"  className='appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none' />
+                    <input type="text" value={assetId} id='assetId' onChange={handleAssetIdChange} placeholder="eg ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"  className='appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none' />
                 </div>
                 <div className=' flex items-center border border-gray-600 my-4 mx-4 rounded'>
                     <div  className='flex-shrink-0 bg-gray-600 text-gray-100 text-sm py-2 px-6'>
@@ -123,9 +138,6 @@ const PlaceBid = () => {
                     <button type='submit' className='bg-gray-100 px-6 py-2 rounded-full border border-gray-600 hover:border-gray-100 hover:bg-gray-500 hover:text-gray-100 '>
                     Place Bid
                     </button>
-                    {/* <button type='button' className='bg-gray-100 px-6 py-2 rounded-full border border-gray-600 hover:border-gray-100 hover:bg-gray-500 hover:text-gray-100 mx-16 '>
-                    Withdraw Bid
-                    </button>  */}
                 </div>  
             </form>
         </div>

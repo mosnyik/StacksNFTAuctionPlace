@@ -2,17 +2,8 @@ import NavBar from '../components/NavBar'
 import {
     AppConfig,
     UserSession,
-    openContractCall,
 } from "@stacks/connect";
 
-import { 
-    uintCV, 
-    createAssetInfo,
-    makeStandardSTXPostCondition,
-    FungibleConditionCode, 
-    AnchorMode,
-    } from "@stacks/transactions";
-import { StacksMocknet } from "@stacks/network";
 import { useState, useEffect } from 'react';
 import PlaceBid from '../components/PlaceABid';
 import { Connect, } from "@stacks/connect-react";
@@ -23,12 +14,6 @@ export default function Home() {
     const appConfig = new AppConfig(["publish_data"]);
     const userSession = new UserSession({ appConfig });
 
-    const [bidAmount, setBidAmount] = useState(0)
-    const [auctionId, setAuctionId] = useState(0)
-    const [tokenId, setTokenId] = useState(0)
-    const [auctionContractAddress, setAuctionContractAddress] = useState(
-        "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"
-    );
     const [userData, setUserData] = useState({})
     const [loggedIn, setLoggedIn] = useState(false);
 
@@ -41,68 +26,6 @@ export default function Home() {
         userSession: userSession,
       }
 
-    const network = new StacksMocknet();
-
-    const handleBidAmountChange = (e) => {
-        setBidAmount(e.target.value);
-      };
-
-    const handleAuctionIdChange = (e) => {
-        setAuctionId(e.target.value);
-          };
-
-    const handleTokenIdChange = (e) => {
-        setTokenId(e.target.value);
-      };
-
-    const placeBid =  async (e) =>{
-        e.preventDefault();
-        const functionArgs = [ 
-            uintCV(tokenId), 
-            uintCV(bidAmount * 1000000), 
-            uintCV(auctionId),
-        ];
-
-        const postConditionAddress = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM';
-        const stxConditionCode = FungibleConditionCode.GreaterEqual;
-        const stxConditionAmount = bidAmount * 1000000;
-        const assetAddress = 'SP62M8MEFH32WGSB7XSF9WJZD7TQB48VQB5ANWSJ';
-        const assetContractName = 'auction';
-        const fungibleAssetInfo = createAssetInfo(assetAddress, assetContractName);
-
-        const postConditions = [
-
-            makeStandardSTXPostCondition(
-                postConditionAddress,
-                stxConditionCode,
-                stxConditionAmount,
-                fungibleAssetInfo
-               )
-         ];
-
-        const options = {
-            contractAddress: auctionContractAddress,
-            contractName: "auction",
-            functionName: "place-a-bidsr",
-            functionArgs,
-            network,
-            postConditions,
-            anchorMode: AnchorMode.Any,
-            appDetails: {
-                name: "Auction",
-                icon: window.location.origin + "/vercel.svg",
-            },
-            onFinish: (data) => {
-                // console.log(data)
-                console.log("Stacks Transaction:", data.stacksTransaction);
-                console.log("Transaction ID:", data.txId);
-                console.log("Raw transaction:", data.txRaw);
-            },
-        }
-    
-       await openContractCall(options);
-
-    }
     useEffect(() => {
         if (userSession.isSignInPending()) {
           userSession.handlePendingSignIn().then((userData) => {

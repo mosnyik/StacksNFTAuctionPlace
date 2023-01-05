@@ -1,16 +1,16 @@
 # **Creating an NFT Auction Dapp With Clarity and Stacks.js: Step-by-Step Guide**
 
-In this tutorial, we would be learning about how to work with Clarity to write smart contracts on the Stacks blockchain and connect it to a next.js app using Stacks.js and we want to achieve that using an NFT Auction dapp as a sample project. You can check out the [github repo](https://github.com/mosnyik/StacksNFTAuctionPlace) anytime if you want to compare your code along the way.
+In this tutorial, we would be learning how to work with Clarity to write smart contracts on the Stacks blockchain and connect it to a next.js app using Stacks.js and we want to achieve that using an NFT Auction dapp as a sample project. You can check out the [github repo](https://github.com/mosnyik/StacksNFTAuctionPlace) anytime if you want to compare your code along the way.
 
 
 ## **Assumption**
 Since this is not a 101 beginner guide, it is assumed that you already successfully installed Clarinet on your machine and that it is available in your system PATH (that is to say, typing clarinet in your Terminal runs Clarinet), if you have not, you can get helpful guide from [Hiro's website](https://docs.hiro.so/smart-contracts/clarinet#installing-clarinet). 
 
 ## **Overview**
-Auctions have a long-standing history spanning back to centuries. It is interesting to see how this method of fundraising has evolved over the years. Today, biding is one of the fastest-growing use cases on the blockchain. All the credits go to decentralized NFT marketplaces that allow buyers and sellers to engage in a peer-to-peer model. That is why in this tutorial, we will build an NFT Auction Dapp which we would simply call *NFT Auction* and it will have the following features
+Auctions have a long-standing history spanning back to centuries. It is interesting to see how this method of fundraising has evolved over the years. Today, bidding is one of the fastest-growing use cases on the blockchain. All the credits go to decentralized NFT marketplaces that allow buyers and sellers to engage in a peer-to-peer model. That is why in this tutorial, we will build an NFT Auction Dapp which we would call *NFT Auction* and it will have the following features
 * A user can whitelist their NFT and create an auction for it.
 * Once an auction is started, the auction maker (maker) can not withdraw their NFT.
-* Every auction will take an expiry time in block-height which would correspond to the time the auction will end or expire
+* Every auction will take an expiry time in `block height` which would correspond to the time the auction will end or expire
 * The maker will only get paid in STX
 * The bidder can only place a bid if they bid higher than the existing highest bid
 * If a bidder did not win the bid, they can request a refund on the bid amount
@@ -19,7 +19,7 @@ Auctions have a long-standing history spanning back to centuries. It is interest
 ## **Workflow**
 Our project would have a **backend** and a **frontend**. 
 
-The **backend** would hold all our smart contracts and everything that associates with it, the **fronend** would hold evrything that the user would use to interact with the smart contract. 
+The **backend** would hold all our smart contracts and everything associated with it, and the **frontend** would hold everything that the user would use to interact with the smart contract. 
 
 ## **Backend**
 To create an **auction**, the maker would call the `create-auction` function from the  auction contract with the following arguments
@@ -31,22 +31,22 @@ To create an **auction**, the maker would call the `create-auction` function fro
 Once the call is made, the NFT is transferred into the contract which serves as an escrow and is kept there till the winner of the bid emerges. 
 Once an auction is started, it would not be stopped halfway.
 
-To **place-a-bid**, the bider would call the `place-a-bid` function from the  auction contract with the following arguments
+To **place-a-bid**, the bidder would call the `place-a-bid` function from the  auction contract with the following arguments
 - The contract of the NFT they want to bid for
 - The auction id of the auction
 - The amount of STX they are biding
 - and token id of the NFT
 
-A bider can bid for an NFT they like. Once a bid is placed, the STX is transferred into the contract, which is serving as our escrow. If the bider wins, they can claim the NFT at expiry of the bid period. A bidder can withdraw their bid if at expiry of the bid period they do not win the bid but they can not change their mind halfway through the bid and take their bid from the contract.
+A bidder can bid for an NFT they like. Once a bid is placed, the STX is transferred into the contract, which serves as our escrow. If the bidder wins, they can claim the NFT at the expiry of the bid period. A bidder can withdraw their bid if at the expiry of the bid period they do not win the bid but they can not change their mind halfway through the bid and take their bid from the contract.
 
 ### **Setup**
 To start, let's head over to our terminal window and type in this command
 ```bash
 clarinet new NFTAuction
 ```
-The above line would create and clarity project folder for us and some other important folders we would need for the project.
+The above line would create a clarity project folder for us and some other important folders we would need for the project.
 
-Let's now create a contract called auction by runnig the following commands in our terminal window
+Let's now create a contract called auction by running the following commands in our terminal window
 ```bash
 cd NFTAuction
 mkdir backend
@@ -54,20 +54,20 @@ cd backend
 
 clarinet contract new auction
 ```
-This creates an auction.clar file in the contract folder. If we go into our `NFTAuction/backend/contracts` wewould see
+This creates an auction.clar file in the contract folder. If we go into our `NFTAuction/backend/contracts` we would see
 
 
 ![](https://i.imgur.com/IqsyMOa.png)
 
 ### **NFT Contract**
-Our auction dapp is for NFTs, so for the purpose of this tutorial, we will create a simple NFT implimenting the [sip009 trait](https://book.clarity-lang.org/ch10-01-sip009-nft-standard.html). [Traits](https://book.clarity-lang.org/ch09-00-traits.html) are similar to token standards if you are coming from Ethereum, they are just a set of public defined functions that are used to define input types, output types and names. 
+Our auction dapp is for NFTs, so for the purpose of this tutorial, we will create a simple NFT implementing the [sip009 trait](https://book.clarity-lang.org/ch10-01-sip009-nft-standard.html). [Traits](https://book.clarity-lang.org/ch09-00-traits.html) are similar to token standards if you are coming from Ethereum, they are just a set of publicly defined functions that are used to define input types, output types and names. 
 
 ### IMPLEMENTING SIP009 TRAIT
-To create an NFT implementing the sip009 trait, we would create a new contract and call it `sip009`. Point your terminal to the NFTAuction directory and run the command to create contract again
+To create an NFT implementing the sip009 trait, we would create a new contract and call it `sip009`. Point your terminal to the NFTAuction directory and run the command to create a contract again
 ```bash
 clarinet contract new sip009
 ```
-Yes, you are right! This would add the sip009.clar file to the contract folder. Next, we would import the trait that we are implimenting.  
+Yes, you are right! This would add the sip009.clar file to the contract folder. Next, we would import the trait that we are implementing.  
 
 ```bash
 clarinet requirements add SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait
@@ -79,14 +79,14 @@ contract_id = 'SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait'` to our Clar
 With that done, let us start building 🛠
 
 At the top of your file, let us [assert conformity](https://book.clarity-lang.org/ch09-02-implementing-traits.html#asserting-trait-conformance) with our sip009 trait which simply means we implementing the specifications of the sip009 contract - that is the functions defined in the trait.
-On the top most of our contract, we would add the line 
+On the topmost of our contract, we would add the line 
 ```Clarity
 (impl-trait 'SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait.nft-trait)
 
 (define-constant contract-owner tx-sender)
 ```
 The first line indicates that we are implementing sip009-nft trait. 
-Next line sets the contract owner to be the one who deploys the contract. That means who ever mints the NFT becomes the owner of the NFT, makes sense right?, yes that is the security built in to Clarity.
+The next line sets the contract owner to be the one who deploys the contract. That means whoever mints the NFT becomes the owner of the NFT, which makes sense right?, yes that is the security built into Clarity.
 
 Let us define errors for the contract, put these lines next, they simply set error to err codes
 ```Clarity
@@ -103,30 +103,30 @@ To create our NFT, we would use
 ```
 The line creates an NFT collection with the name `auctionnfts`.
 
-The next line defines a variable `token-id-nonce` of type uint starting with the value of 0 (Note it is written as u0 because it is an unsinged integer) that sets a unique id for each NFT minted.
+The next line defines a variable `token-id-nonce` of type uint starting with the value of 0 (Note it is written as u0 because it is an unsigned integer) that sets a unique id for each NFT minted.
 
-To implement the NFT trait, what we need to do is to simply define all the required functions defined in the [official deployed contract](https://explorer.stacks.co/txid/0x80eb693e5e2a9928094792080b7f6d69d66ea9cc881bc465e8d9c5c621bd4d07?chain=mainnet), so we would start with the `get-last-token-id`.
+To implement the NFT trait, what we need to do is simply define all the required functions defined in the [official deployed contract](https://explorer.stacks.co/txid/0x80eb693e5e2a9928094792080b7f6d69d66ea9cc881bc465e8d9c5c621bd4d07?chain=mainnet), so we would start with the `get-last-token-id`.
 
 ```Clarity
 (define-read-only (get-last-token-id) 
     (ok (var-get token-id-nonce) )
 )
 ```
-The line above defines a read only function, that is a function that does not modify the state of the blockchain, (so it only reads from the blockchain) called `get-last-token-id` and returns the `token id` as an okay response.
+The line above defines a read-only function, which is a function that does not modify the state of the blockchain, (so it only reads from the blockchain) called `get-last-token-id` and returns the `token id` as an okay response.
 
 ```Clarity
 (define-read-only (get-token-uri (token-id uint)) 
     (ok none)
 )
 ```
-Next we define another read only function to get `token-uri`. The function takes in a token id as parameter and returns the token uri.
+Next, we define another read-only function to get `token-uri`. The function takes in a token-id as a parameter and returns the token-uri.
 
 ```Clarity
 (define-read-only (get-owner (token-id uint)) 
     (ok (nft-get-owner? auctionnfts token-id))
 )
 ```
-After that we define yet another read only function to check for the owner of the token, it the token id and returns the principal that owns the token
+After that we define yet another read-only function to check for the owner of the token, it is the token-id and returns the principal that owns the token
 
 ```Clarity
 (define-public (transfer (token-id uint ) (sender principal) (reciever principal)) 
@@ -138,8 +138,8 @@ After that we define yet another read only function to check for the owner of th
 )
 )
 ```
-Now let's define a transfer function. It would be a public function meaning it can be called from outside the contract by maybe an app or another contract, it would take the reciever's principal, the sender's principal and the token-id and the body of the fuction perform a couple of checks, 
-first check is to ensure the the sender is the owner of the token, if true, then the second line transfers the token from the sender to the reciever.
+Now let's define a transfer function. It would be a public function meaning it can be called from outside the contract by maybe an app or another contract, it would take the reciever's principal, the sender's principal and the token-id and the body of the function to perform a couple of checks, 
+the first check is to ensure that the sender is the owner of the token, if true, then the second line transfers the token from the sender to the reciever.
 
 
 ```Clarity
@@ -157,8 +157,8 @@ first check is to ensure the the sender is the owner of the token, if true, then
 ```
 
 Finally, we would define a mint function which is also a public function that allows for external calls. The function takes the reciever's principal - that is the principal that is calling the mint function.
-Once the call is made, first, the function sets the token id to be the last token id + 1 then, It would now checks to ensure that the principal calling the contract is the reciever of the token that would be minted
-After that, the next line, try to mint the token, if the token-id already exists, the operation fails and every statemutaion gets reverted, other wise, the last line line runs and sets the token-nonce which is the specific identifier given to the token when created to be th value of the token id an then returns the token id of the minted token.
+Once the call is made, first, the function sets the token id to be the last token id + 1 then, It would now check to ensure that the principal calling the contract is the reciever of the token that would be minted
+After that, the next line, try to mint the token, if the token-id already exists, the operation fails and every state mutation gets reverted, otherwise, the last line runs and sets the token-nonce which is the specific identifier given to the token when created to be the value of the token-id and then returns the token id of the minted token.
 
 By now your `sip009.clar` file should look like this
 
@@ -224,7 +224,7 @@ Our auction contract, at its most basic, is an escrow that takes an NFT when an 
 
 
 Now let's start working on the NFTAuction.
-Let's go to our `auction.clar` that we created earlier when we started and import triats we would be needing and define our constants.
+Let's go to our `auction.clar` that we created earlier when we started and import traits we would be needing and define our constants.
 
 In our terminal window, we would run 
 
@@ -237,7 +237,7 @@ which would import the trait requirements for using SIP009 and add
 contract_id = 'SP2PABAF9FTAJYNFZH93XENAJ8FVY99RRM50D2JG9.nft-trait'
 `
 to our Clarinet.toml file.
-Next we would define constants for our project.
+Next, we would define constants for our project.
 Let's start with,
 
 ```Clarity!
@@ -705,7 +705,7 @@ Next we would work on the frontend of the dapp
 
 ## **FRONTEND**
 
-Now that we are done with the smart contract, we would hook it to a next.js frontend. 
+Now that we are done with the smart contract, we would hook it to a [next.js](https://nextjs.org/docs) frontend using  [Stacks.js](https://www.hiro.so/stacks-js) which is a full fledged js library for dapps on stacks blockchain. 
 
 To build our frontend and test it, we would require a couple of things
 
@@ -715,15 +715,15 @@ You would need to have `npm` running on you machine, I am using `v 9.1.3` if you
 ```
 npm -v
 ```
-outside your clarinet console.
+outside your clarinet console to see your `npm` version.
 
-You would be using *Docker* to run a local devnet on your machine, you can install one [here](https://github.com/mosnyik/StacksNFTAuctionPlace) if you do not already have.
+You would be using *Docker* to run a local devnet on your machine, you can install one [here](https://www.docker.com/) if you do not already have.
 
 Since this is not a react-next or tailwind tutorial, we would just supply a boiler plate code for the next app and focus more on the stack.js side of things.
 
 
-Back to our `NFTAuction` create a folder called `frontend` using the code 
-```terminal
+Back to our `NFTAuction` create a folder called `frontend` using the code. ( Assuming you have been following from the begining non stop, otherwise just point terminal to your project root directory )
+```shell
 cd ../
 
 mkdir frontend
@@ -736,13 +736,46 @@ in the frontend folder, run
 ```
 npm create-next-app@latest
 ```
-to create a next app for you and in the same folder, run
+to create a next app for you and in the same folder. Your folder structure at this point should look like this
+```shell
+NFTAuctionDapp
+    -backend
+    -frontend
+```
+ Now run
+
+```shell
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+```
+
+The first line would install tailwindcss, postcss and autoprefixer as dev dependency in our frontend folder, the second line would create a tailwind.config.js file where we can configure our tailwindcss for the app.
+Now let's go in to the tailwind.config.js and add some codes to content as follows to allow tailwind to access our pages and components(which we would create in a sec) folders
+
+```shell
+module.exports = {
+  content: [
+    "./pages/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
 
 ```
-tailwind istallation command
+And now lets add tailwind to our global styles so that we can see and use it from anywhere within the app, let's go to global.css in our styles folder under the frontend folder and paste the following lines, replacing all that is there
+
+```shell
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 ```
 
-this would install tailwind css library that we would use for styling the page.
+with this, we are all set to build our frontend of the dapp. 
+
+*PAGES*
 
 Now you can replace the code in your *index.js* file with 
 
@@ -782,68 +815,161 @@ export default function Home() {
 What is going on in this index.js file? Nothing gang-aang at all (It means nothing serious at all)
 Just a regular component that retuns some texts to welcome our user and a MintNFT component to allow user mint a sample auctionnft that they can use to test the platform.
 
-Now let's create a components folder inside our fronend folder inside which we can create
-*NavBar.js* and paste the following codes
+***auction.js page***
+
+```javascript
+
+import NavBar from '../components/NavBar'
+import { Connect, } from "@stacks/connect-react";
+import {
+    AppConfig,
+    UserSession,
+} from "@stacks/connect";
+
+
+import WhitelistNFT from '../components/Whitelist';
+import CreateAuction from '../components/CreateAuction';
+
+export default function Home() {
+  const appConfig = new AppConfig(["publish_data"]);
+  const userSession = new UserSession({ appConfig });
+
+  const authOption = {
+            appDetails: {
+              name: 'auction',
+              icon: 'https://assets.website-files.com/618b0aafa4afde65f2fe38fe/618b0aafa4afde2ae1fe3a1f_icon-isotipo.svg',
+            },
+            redirectTo: '/',
+            userSession: userSession,
+          }
+
+  return (
+    <div>
+      <NavBar />
+      <div className='py-16 '>
+            <div>
+                <h2 className='px-4 pb-6 font-bold text-xl'>
+                    Create an Auction, it is our pleasure to allow you liquidate your NFT
+                </h2>
+                <p className='px-4 pb-4'>
+                    All you need to do is first whitelist your NFT, 
+                    Then you can put it on auction!!
+                </p>
+            </div>
+            {/*
+            implimentation of whitelist
+             */}
+            <Connect authOptions={authOption}>
+            < WhitelistNFT />
+            </Connect>
+
+        <div>
+                <h2 className='px-4 pb-6 font-bold text-xl'>
+                    You can now put your NFT on auction!!
+                </h2>
+                <p className='px-4 pb-4'>
+                    Provide the NFT identifier, its token id, an auction starting price 
+                    and then set a duration for your auction. 
+                    
+                </p>
+            </div>
+        {/*
+            implimentation of create auction
+             */}
+            <Connect authOptions={authOption}>
+            < CreateAuction />
+            </Connect>
+        
+      </div>
+    </div>
+  )
+}
+
+```
+
+
+***bid.js page***
+
+This would be the bids page
+
+```javascript
+import NavBar from '../components/NavBar'
+import {
+    AppConfig,
+    UserSession,
+} from "@stacks/connect";
+
+import { useState, useEffect } from 'react';
+import PlaceBid from '../components/PlaceABid';
+import { Connect, } from "@stacks/connect-react";
+
+export default function Home() {
+    const appConfig = new AppConfig(["publish_data"]);
+    const userSession = new UserSession({ appConfig });
+    
+    const [userData, setUserData] = useState({})
+    const [loggedIn, setLoggedIn] = useState(false);
+
+    const authOption = {
+        appDetails: {
+          name: 'auction',
+          icon: 'https://assets.website-files.com/618b0aafa4afde65f2fe38fe/618b0aafa4afde2ae1fe3a1f_icon-isotipo.svg',
+        },
+        redirectTo: '/',
+        userSession: userSession,
+      }
+
+    useEffect(() => {
+        if (userSession.isSignInPending()) {
+          userSession.handlePendingSignIn().then((userData) => {
+            setUserData(userData)
+          })
+        } else if (userSession.isUserSignedIn()) {
+          setLoggedIn(true)
+          setUserData(userSession.loadUserData())
+        }
+      }, [])
+
+  return (
+    <div>
+      <NavBar />
+      <div className='py-16 '>
+            <div>
+                <h2 className='px-4 pb-6 font-bold text-xl'>
+                    Place a bid, the highest bidder gets the NFT
+                </h2>
+                <p className='px-4 pb-4'>
+                    Note: Once you place a bid, you can not widraw until the auction is over. <br/>
+                    However you can request a refund if you did not win the bid
+                </p>
+            </div>
+
+             {/*
+            implimentation of whitelist
+             */}
+            <Connect authOptions={authOption}>
+            < PlaceBid />
+            </Connect>
+
+      </div>
+    </div>
+  )
+}
+```
+
+Now let's create a components folder inside our fronend folder inside which we would create
+*NavBar.js* and paste the following codes.
 
 ***NavBar.js component***
 
 ```javascript
 import Link from 'next/link'
 import ConnectWallet from './ConnectWallet'
-// import { useState, useEffect } from 'react'
-// import { AppConfig, UserSession, showConnect} from '@stacks/connect'
-
 
 const NavBar = () => {
-    // const appConfig = new AppConfig(['publish_data'])
-    // const userSession = new UserSession ({appConfig})
-
-    // const [userData, setUserData] = useState({});
-    // const [loggedIn, setLoggedIn] = useState(false);
-    // const [buttonText, setbuttonText] = useState('Connect Wallet');
-
-
-//       // function to connect our statcks wallet
-//   function authenticate() {
-//     showConnect({
-//         appDetails: {
-//             name: "NFT Auction Place",
-//             icon: "https://assets.website-files.com/618b0aafa4afde65f2fe38fe/618b0aafa4afde2ae1fe3a1f_icon-isotipo.svg",
-//         },
-//         redirectTo: "/",
-//         onFinish: () => {
-//             window.location.reload();
-//         },
-//         userSession,
-//     });
-// }
-
-// useEffect(() => {
-//     if (userSession.isSignInPending()) {
-//       userSession.handlePendingSignIn().then((userData) => {
-//         setUserData(userData);
-//       });
-    
-//     console.log('Logged In')
-      
-//     } else if (userSession.isUserSignedIn()) {
-//       setLoggedIn(true);
-//       setbuttonText("Wallet Connected");
-//       setUserData(userSession.loadUserData());
-//     }
-//   }, []);
     return ( 
 
-        (<div className= '
-        p-10 
-        flex 
-        flex-nowrap 
-        space-x-4 
-        drop-shadow-lg 
-        bg-slate-100 
-        h-10 
-        justify-around ' 
-        >
+        (<div className= 'p-10 flex flex-nowrap space-x-4 drop-shadow-lg bg-slate-100 h-10 justify-around ' >
             <div>NFT Auction Place</div>
             <div className='px-10 flex flex-row justify-around space-x-6'>  
                 <div className='hover:underline '>
@@ -864,9 +990,6 @@ const NavBar = () => {
             </div>
             <div>
                 <ConnectWallet />
-            {/* <button onClick={() => authenticate()} className='bg-white hover:bg-gray-100 px-4 py-1 border border-gray-600 text-gray-400  hover:text-gray-800 shadow justify-start mb-4 rounded-full'>
-                {buttonText}
-            </button> */}
             </div>
         </div>)
          
@@ -944,7 +1067,7 @@ const ConnectWallet = () => {
 
 export default ConnectWallet;
 ```
-What is goin on in the *connectWallet* component, it is basically just authenticating the user, is user is not logged in, they get a pop up to log into their web wallet or downlaod one, if logged in, the also have a chance to disconnect if they want
+What is going on in the *connectWallet* component? Well, it is basically just authenticating the user using `@stacks/connect`. If the user is not logged in, they get a pop up to log into their web wallet or downlaod one, if logged in, they also have a chance to disconnect if they so choose. 
 
 ***MintSIP009.js component***
 
@@ -971,7 +1094,7 @@ const MintNFT = () => {
     const mint = async () => {
         /*
         Remember when we were testing our smart contract, we had to mint an NFT first before we do anything else, that is what this component help us do, mint the NFT.
-        The asset address is the contract deploye address
+        The asset address is the contract deployer's address
         */
         const assetAddress = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'
         
@@ -994,7 +1117,8 @@ const MintNFT = () => {
                 icon: 'https://assets.website-files.com/618b0aafa4afde65f2fe38fe/618b0aafa4afde2ae1fe3a1f_icon-isotipo.svg',
             },
             onFinish: (data) => {
-                // console.log(data)
+                // a very simple way to provide feedback to users that the NFT has been minted successfully
+                window.alert("NFT mint successful, you can whitelist the NFT now, then create an auction");
                 console.log("Stacks Transaction:", data.stacksTransaction);
                 console.log("Transaction ID:", data.txId);
                 console.log("Raw transaction:", data.txRaw);
@@ -1024,288 +1148,799 @@ const MintNFT = () => {
  
 export default MintNFT;
 ```
-Here too, not so much is going on, you know we define about four fuctions in the `sip009.clar` when we wrote our smart contract, well we ar only interested in the mint function, and that is what we hooked up to.
+Here too, not so much is going on, you know we defined about four fuctions in the `sip009.clar` when we wrote our smart contract, well we are only interested in the mint function, and that is what we hooked up to.
 
 ***WhitelistNFT.js component***
 
-```
-WhitelistNFT component code
-```
+```javascript
+import React, { useEffect, useState } from "react";
+import {  useConnect } from "@stacks/connect-react";
+import {  StacksMocknet } from "@stacks/network";
+import {
+  AnchorMode,
+   PostConditionMode,
+  NonFungibleConditionCode,
+  bufferCVFromString,
+  createAssetInfo,
+  makeStandardNonFungiblePostCondition,
+  contractPrincipalCV,
+  StacksMessageType, 
+  trueCV,  
+} from "@stacks/transactions";
 
+import { userSession } from "./ConnectWallet";
+
+const WhitelistNFT = () => {
+  const { doContractCall } = useConnect();
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const [assetWhitelist, setAssetWhitelist] = useState("");
+  const handleAssetWhitelistChange = (e) => {
+    setAssetWhitelist(e.target.value);
+  };
+
+const network = new StacksMocknet();
+
+const setWhitelistNFT = async (e) => {
+    e.preventDefault();
+    const address = assetWhitelist
+
+    // post condition values
+    const postConditionAddress = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'  
+    const assetAddress = address
+    const postConditionCode = NonFungibleConditionCode.DoesNotSend;
+    const assetContractName = "sip009"
+    const assetName = 'auctionnfts'
+    const tokenAssetName = bufferCVFromString('auctionnfts')
+    const type = StacksMessageType.AssetInfo
+    const nonFungibleAssetInfo = createAssetInfo (
+        assetAddress,
+        assetContractName,
+        assetName,
+        type
+        )
+    /*
+    Remember when we made contract-calls from clarinet console,
+    we did it in the format 
+    (contract-call? contract-we-are-calling-from function-we-are-call function-arguments)
+    */
+    const functionArgs = [ 
+        /*
+        Note that we need to construct a contractPrincipal CLarity Type 
+        because the principal we parse is the NFT contract
+        */
+          contractPrincipalCV(
+            address,
+            assetContractName
+            ),
+        trueCV(),
+        ];
+       
+    // postconditions
+    const postConditions = [
+        makeStandardNonFungiblePostCondition(
+            postConditionAddress,
+            postConditionCode,
+            nonFungibleAssetInfo,
+            tokenAssetName
+            ),
+                            ];
+    // object used as argument to parse into a contract call
+    const options = {
+        network,
+        anchorMode: AnchorMode.Any,
+        contractAddress: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+        contractName: "auction",
+        functionName: "set-whitelisted",
+        functionArgs,
+        PostConditionMode: PostConditionMode.Deny,
+        postConditions,
+        appDetails: {
+            name: "Auction",
+            icon: window.location.origin + "/vercel.svg",
+        },
+        onFinish: (data) => {
+          window.alert("Contract Whitelisted, now you can create an auction after a block confirmation");
+            console.log("Stacks Transaction:", data.stacksTransaction);
+            console.log("Transaction ID:", data.txId);
+            console.log("Raw transaction:", data.txRaw);
+        },
+    }
+   
+     await doContractCall(options);
+   
+}
+
+  if (!mounted || !userSession.isUserSignedIn()) {
+    return null;
+  }
+
+  return (
+
+    <div>
+
+    <form onSubmit={setWhitelistNFT} className='lg:w-1/3 sm:w-2/3 '>
+                <div className=' flex items-center border border-gray-600 my-4 mx-4 rounded'>
+                    <div className='flex-shrink-0 bg-gray-600 text-gray-100 text-sm py-2 px-6'>
+                        Asset id  
+                    </div>
+                    <input 
+                    type="text" 
+                    value={assetWhitelist} 
+                    id='whiteListAssetId' 
+                    onChange={handleAssetWhitelistChange} 
+                    placeholder="eg ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"  
+                    className='appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none' />
+                </div>
+                 <div className='px-5 py-4 '>
+                    <button 
+                    type='submit' 
+                    className='bg-gray-100 px-6 py-2 rounded-full border border-gray-600 hover:border-gray-100 hover:bg-gray-500 hover:text-gray-100 font-semibold'>
+                        Whitelist NFT
+                    </button>
+                </div>
+            </form>
+    </div>
+  );
+};
+
+export default WhitelistNFT;
+```
+All we are doing here is to make a contract call to the smart contract with the required arguements converted to clarity types.
 
 ***CreateAuction.js component***
 
-```
-CreateAuction component code
-```
-
-
-***PlaceBid.js component***
-
-```
-PlaceBid component code
-```
-
-***SettleAuction.js component***
-
-```
-SettleAuction component code
-```
-
-***RequestRefund.js component***
-
-```
-RequestRefund component code
-```
-
-Now let's create the other pages, go into the pages folder and create 
-
-***auction.js page***
-
-This is our create auction page
-
 ```javascript
-import NavBar from '../components/NavBar'
-import { Connect, } from "@stacks/connect-react";
+import React, { useEffect, useState } from "react";
+import { useConnect, } from "@stacks/connect-react";
 import {
-    AppConfig,
-    UserSession,
-    openContractCall,
-} from "@stacks/connect";
-
-// import { StacksMocknet } from "@stacks/network";
-
-import { useState, useEffect} from 'react';
-import WhitelistNFT from '../components/Whitelist';
-import CreateAuction from '../components/CreateAuction';
-
-export default function Home() {
-  const appConfig = new AppConfig(["publish_data"]);
-  const userSession = new UserSession({ appConfig });
-
-  const authOption = {
-            appDetails: {
-              name: 'auction',
-              icon: 'https://assets.website-files.com/618b0aafa4afde65f2fe38fe/618b0aafa4afde2ae1fe3a1f_icon-isotipo.svg',
-            },
-            redirectTo: '/',
-            userSession: userSession,
-          }
-  
-
-//     const [userData, setUserData] = useState({});
-//     const [loggedIn, setLoggedIn] = useState(false);
-   
-//     const authOption = {
-//         appDetails: {
-//           name: 'auction',
-//           icon: 'https://assets.website-files.com/618b0aafa4afde65f2fe38fe/618b0aafa4afde2ae1fe3a1f_icon-isotipo.svg',
-//         },
-//         redirectTo: '/',
-//         userSession: userSession,
-//       }
-
-// useEffect(() => {
-//     if (userSession.isSignInPending()) {
-//       userSession.handlePendingSignIn().then((userData) => {
-//         setUserData(userData)
-//       })
-//     } else if (userSession.isUserSignedIn()) {
-//       setLoggedIn(true)
-//       setUserData(userSession.loadUserData())
-      
-//     }
-//   }, [])
-
-  return (
-    <div>
-      <NavBar />
-      <div className='py-16 '>
-            <div>
-                <h2 className='px-4 pb-6 font-bold text-xl'>
-                    Create an Auction, it is our pleasure to allow you liquidate your NFT
-                </h2>
-                <p className='px-4 pb-4'>
-                    All you need to do is first whitelist your NFT, 
-                    Then you can put it on auction!!
-                </p>
-            </div>
-            {/*
-            implimentation of whitelist
-             */}
-            <Connect authOptions={authOption}>
-            < WhitelistNFT />
-            </Connect>
-
-        <div>
-                <h2 className='px-4 pb-6 font-bold text-xl'>
-                    You can now put your NFT on auction!!
-                </h2>
-                <p className='px-4 pb-4'>
-                    Provide the NFT identifier, its token id, an auction starting price 
-                    and then set a duration for your auction. 
-                    
-                </p>
-            </div>
-        {/*
-            implimentation of create auction
-             */}
-            <Connect authOptions={authOption}>
-            < CreateAuction />
-            </Connect>
-        
-      </div>
-    </div>
-  )
-}
-```
-
-***bid.js page***
-
-This would be the bids page
-
-```javascript
-import NavBar from '../components/NavBar'
-import {
-    AppConfig,
-    UserSession,
-    openContractCall,
-} from "@stacks/connect";
-
-import { 
-    uintCV, 
-    createAssetInfo,
-    makeStandardSTXPostCondition,
-    FungibleConditionCode, 
-    AnchorMode,
-    } from "@stacks/transactions";
+  AnchorMode,
+  PostConditionMode,
+  uintCV,
+  NonFungibleConditionCode,
+  bufferCVFromString,
+  createAssetInfo,
+  makeStandardNonFungiblePostCondition,
+  contractPrincipalCV,
+  StacksMessageType,
+  tupleCV
+} from "@stacks/transactions";
+import { userSession } from "./ConnectWallet";
 import { StacksMocknet } from "@stacks/network";
-import { useState, useEffect } from 'react';
-import PlaceBid from '../components/PlaceABid';
-import { Connect, } from "@stacks/connect-react";
 
+const CreateAuction = () => {
+  /**
+   * NOTE: this is an NFT transfer event,
+   * we are sendeing the NFT fro the maker to the contract
+   * sender: standardPrincipal
+   * reciever: contractPrincipal
+   * postConditions: standardNonFunginbleTransfer for contractPrincipal
+   */
+  const { doContractCall } = useConnect();
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
-export default function Home() {
-    const appConfig = new AppConfig(["publish_data"]);
-    const userSession = new UserSession({ appConfig });
-
-    const [bidAmount, setBidAmount] = useState(0)
-    const [auctionId, setAuctionId] = useState(0)
+    const [assetId, setAssetId] = useState("")
+    const [startPrice, setStartPrice] = useState(0)
     const [tokenId, setTokenId] = useState(0)
-    const [auctionContractAddress, setAuctionContractAddress] = useState(
-        "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"
-    );
-    const [userData, setUserData] = useState({})
-    const [loggedIn, setLoggedIn] = useState(false);
-
-    const authOption = {
-        appDetails: {
-          name: 'auction',
-          icon: 'https://assets.website-files.com/618b0aafa4afde65f2fe38fe/618b0aafa4afde2ae1fe3a1f_icon-isotipo.svg',
-        },
-        redirectTo: '/',
-        userSession: userSession,
-      }
+    const [auctionDuration, setAuctionDuration] = useState(0)
 
     const network = new StacksMocknet();
 
-    const handleBidAmountChange = (e) => {
-        setBidAmount(e.target.value);
+    const handleAssetIdChange = (e) => {
+        setAssetId(e.target.value);
       };
 
-    const handleAuctionIdChange = (e) => {
-        setAuctionId(e.target.value);
-          };
+    const handlePriceChange = (e) => {
+        setStartPrice(e.target.value);
+      };
 
     const handleTokenIdChange = (e) => {
         setTokenId(e.target.value);
       };
 
-    const placeBid =  async (e) =>{
+    const handleAuctionDurationChange = (e) => {
+        setAuctionDuration(e.target.value);
+      };
+
+  const createAuction= async (event) => {
+    event.preventDefault();
+
+    // constructing values for postconditions
+    const address = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"
+  
+    const assetAddress = address
+    const postConditionAddress = 
+        userSession.loadUserData().profile.stxAddress.testnet
+    const nftPostConditionCode = NonFungibleConditionCode.Sends;
+    const assetContractName = 'sip009'
+    const assetName = 'auctionnfts'
+    const tokenAssetName = bufferCVFromString('auctionnfts')
+    const type = StacksMessageType.AssetInfo
+    const nonFungibleAssetInfo = createAssetInfo(
+            assetAddress,
+            assetContractName,
+            assetName,
+            type
+    )
+   
+
+    const functionArgs = [ 
+      
+      contractPrincipalCV(
+          address,
+          assetContractName
+          ),
+      tupleCV({
+        "token-id": uintCV(tokenId), 
+        "start-price": uintCV(startPrice * 1000000), 
+        "expiry": uintCV(auctionDuration),})
+  ];
+  
+  /*
+  Post conditions are clarity built-in checker that
+help mitigate the potential risk of having a reentrancy 
+call by ensuring that certain conditions are met otherwise, 
+the fuction call reverts and the caller lose just
+ the transaction fees alone
+  */
+    const postConditions = [
+        makeStandardNonFungiblePostCondition(
+            postConditionAddress,
+            nftPostConditionCode,
+            nonFungibleAssetInfo,
+            tokenAssetName
+            ),
+        
+    ]
+    
+    const options = {
+      network,
+      anchorMode: AnchorMode.Any,
+      contractAddress: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+      contractName: "auction",
+      functionName: "create-auction",
+      functionArgs,
+       PostConditionMode: PostConditionMode.Deny,
+       postConditions,
+      appDetails: {
+          name: "Auction",
+          icon: window.location.origin + "/vercel.svg",
+      },
+      onFininsh: (data) => {
+          window.alert("Auction create successfully");
+          console.log("Stacks Transaction:", data.stacksTransaction);
+          console.log("Transaction ID:", data.txId);
+          console.log("Raw transaction:", data.txRaw);
+      }
+  }
+    await doContractCall(options);
+  };
+
+  if (!mounted || !userSession.isUserSignedIn()) {
+    return null;
+  }
+
+  return (
+    <div>
+        <form onSubmit={createAuction} className='lg:w-1/3 sm:w-2/3 '>
+            <div className=' flex items-center border border-gray-600 my-4 mx-4 rounded'>
+                <div className='flex-shrink-0 bg-gray-600 text-gray-100 text-sm py-2 px-6'>
+                    Asset id  
+                </div>
+                <input type="text" value={assetId} id='assetId' onChange={handleAssetIdChange} placeholder="eg ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"  className='appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none' />
+            </div>
+            
+            <div className=' flex items-center border border-gray-600 my-4 mx-4 rounded'>
+                <div className='flex-shrink-0 bg-gray-600 text-gray-100 text-sm py-2 px-6'>
+                    Start Price  
+                </div>
+                <input 
+                type="number" 
+                value={startPrice} 
+                id='startPrice' 
+                onChange={handlePriceChange}  
+                placeholder='Enter auction start price eg 5000 STX' 
+                className='appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none' />
+            </div>
+            <div className=' flex items-center border border-gray-600 my-4 mx-4 rounded'>
+                <div  className='flex-shrink-0 bg-gray-600 text-gray-100 text-sm py-2 px-6'>
+                    Token ID  
+                </div>
+                <input 
+                value={tokenId} 
+                id='tokenId' 
+                type='number' 
+                onChange={handleTokenIdChange} 
+                placeholder='Enter the token ID' 
+                className='appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none' />
+            </div>  
+            <div className=' flex items-center border border-gray-600 my-4 mx-4 rounded'>
+                <div className='flex-shrink-0 bg-gray-600  text-gray-100 text-sm py-2 px-6'>
+                    Set Duration  
+                </div>
+                <input 
+                value={auctionDuration} 
+                id='auctionDuration' 
+                type='number' 
+                onChange={handleAuctionDurationChange} 
+                placeholder='Enter the block-heigh at which the auction ends' 
+                className='appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none' />
+            </div> 
+            <div className='px-5 py-4 '>
+            <button 
+            type='submit' 
+            className='bg-gray-100 px-6 py-2 rounded-full border border-gray-600 hover:border-gray-100 hover:bg-gray-500 hover:text-gray-100 font-semibold'>
+                 Start Auction
+            </button>
+            </div>
+        </form>
+    </div>
+  );
+};
+
+export default CreateAuction;
+
+```
+This component basically just exports a button that when clicked calls the `create-auction` function from the our smart contract and transfers the NFT from the caller to the contract.
+
+***PlaceBid.js component***
+
+```javascript
+import { AppConfig, useConnect, UserSession } from "@stacks/connect-react";
+import {
+    FungibleConditionCode,
+    makeStandardSTXPostCondition,
+    uintCV,
+    AnchorMode,
+    PostConditionMode,
+    contractPrincipalCV,
+    tupleCV,
+
+} from "@stacks/transactions";
+import {useEffect, useState } from "react";
+
+import { StacksMocknet } from "@stacks/network";
+
+
+const PlaceBid = () => {
+      /**
+   * NOTE: this is an STX transfer event,
+   * we are sendeing the STX from the bider to the contract
+   * sender: standardPrincipal
+   * reciever: contractPrincipal
+   * postConditions: standardPrincipalSTXtransfer for contractPrincipal
+   */
+    const appConfig = new AppConfig(['publish_data'])
+    const userSession = new UserSession({ appConfig})
+    const {doContractCall} = useConnect();
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => setMounted(true), [])
+
+    const [assetId, setAssetId] = useState("")
+    const [bidAmount, setBidAmount] = useState(0);
+    const [tokenId, setTokeenId] = useState(0);
+    const [auctionId, setAuctionId] = useState(0);
+    const handleBidAmountChange = (e) => {
+        setBidAmount(e.target.value)
+    }
+
+    const network = new StacksMocknet();
+    const handleTokenIdChange = (e) => {
+        setTokeenId(e.target.value)
+    }
+
+    const handleAuctionIdChange = (e) =>{
+        setAuctionId(e.target.value)
+    }
+
+    const handleAssetIdChange = (e) =>{
+        setAssetId(e.target.value)
+    }
+
+    const handlePlaceBid = async (e) => {
         e.preventDefault();
-        const functionArgs = [ 
-            uintCV(tokenId), 
-            uintCV(bidAmount * 1000000), 
-            uintCV(auctionId),
-        ];
+        const address = assetId
+        
+        // postcondition variables
+        const postConditionAddress = 
+        userSession.loadUserData().profile.stxAddress.testnet
+        const stxConditionCode = FungibleConditionCode.LessEqual;
+        const assetContractName = 'sip009'
+        /*
+        usually in clarity, STX amounts are in microStacks by default
+        so we convert them to STX by multiplying the amount by 1000000.
+        Our biding is in STX not microStacks
+        */
+        const stxConditionAmount = bidAmount * 1000000
+         
+        const functionArgs = [
+            contractPrincipalCV(
+                address,
+                assetContractName
+                ),
+            tupleCV({
+                "token-id": uintCV(tokenId), 
+                "bid-amount": uintCV(bidAmount * 1000000), 
+                "auction-id": uintCV(auctionId),})
+        ]
 
-        const postConditionAddress = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM';
-        const stxConditionCode = FungibleConditionCode.GreaterEqual;
-        const stxConditionAmount = bidAmount * 1000000;
-        const assetAddress = 'SP62M8MEFH32WGSB7XSF9WJZD7TQB48VQB5ANWSJ';
-        const assetContractName = 'auction';
-        const fungibleAssetInfo = createAssetInfo(assetAddress, assetContractName);
-
+        // postcondition
         const postConditions = [
 
-            makeStandardSTXPostCondition(
-                postConditionAddress,
-                stxConditionCode,
-                stxConditionAmount,
-                fungibleAssetInfo
-               )
-         ];
+        makeStandardSTXPostCondition(
+            postConditionAddress,
+            stxConditionCode,
+            stxConditionAmount
+            )]
 
         const options = {
-            contractAddress: auctionContractAddress,
-            contractName: "auction",
-            functionName: "place-a-bidsr",
-            functionArgs,
             network,
-            postConditions,
             anchorMode: AnchorMode.Any,
+            contractAddress: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+            contractName: "auction",
+            functionName: "place-a-bid",
+            functionArgs,
+            PostConditionMode: PostConditionMode.Deny,
+            postConditions,
             appDetails: {
                 name: "Auction",
                 icon: window.location.origin + "/vercel.svg",
             },
-            onFinish: (data) => {
-                // console.log(data)
+            onFininsh: (data) => {
+                window.alert("Bid placed successfully");
                 console.log("Stacks Transaction:", data.stacksTransaction);
                 console.log("Transaction ID:", data.txId);
                 console.log("Raw transaction:", data.txRaw);
-            },
+            }
         }
-    
-       await openContractCall(options);
-
+       await doContractCall(options);
     }
-    useEffect(() => {
-        if (userSession.isSignInPending()) {
-          userSession.handlePendingSignIn().then((userData) => {
-            setUserData(userData)
-          })
-        } else if (userSession.isUserSignedIn()) {
-          setLoggedIn(true)
-          setUserData(userSession.loadUserData())
-        }
-      }, [])
+
+    if(!mounted || !userSession.isUserSignedIn()){
+        return null
+    }
+    return ( 
+        <div>
+            <form onSubmit={handlePlaceBid} className='lg:w-1/3 sm:w-2/3 '>
+                <div className=' flex items-center border border-gray-600 my-4 mx-4 rounded'>
+                    <div className='flex-shrink-0 bg-gray-600 text-gray-100 text-sm py-2 px-6'>
+                        Asset id  
+                    </div>
+                    <input type="text" value={assetId} id='assetId' onChange={handleAssetIdChange} placeholder="eg ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"  className='appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none' />
+                </div>
+                <div className=' flex items-center border border-gray-600 my-4 mx-4 rounded'>
+                    <div  className='flex-shrink-0 bg-gray-600 text-gray-100 text-sm py-2 px-6'>
+                        Bid Amount
+                    </div>
+                    <input onChange={handleBidAmountChange} type='number' value={bidAmount} placeholder='Bids are in STX eg 4 means 4 STX' className='appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none' />
+                </div>  
+                <div className=' flex items-center border border-gray-600 my-4 mx-4 rounded'>
+                    <div  className='flex-shrink-0 bg-gray-600 text-gray-100 text-sm py-2 px-6'>
+                        Token-id  
+                    </div>
+                    <input onChange={handleTokenIdChange} type='number' value={tokenId} placeholder='Enter token id of your bid interest' className='appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none' />
+                </div>  
+                <div className=' flex items-center border border-gray-600 my-4 mx-4 rounded'>
+                    <div  className='flex-shrink-0 bg-gray-600 text-gray-100 text-sm py-2 px-6'>
+                        Auction-id  
+                    </div>
+                    <input onChange={handleAuctionIdChange} type='number' value={auctionId} placeholder='Enter the auction id of the bid' className='appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none' />
+                </div>
+                <div className='px-5 py-4 justify-evenly'>
+                    <button type='submit' className='bg-gray-100 px-6 py-2 rounded-full border border-gray-600 hover:border-gray-100 hover:bg-gray-500 hover:text-gray-100 '>
+                    Place Bid
+                    </button>
+                </div>  
+            </form>
+        </div>
+     );
+}
+ 
+export default PlaceBid;
+
+```
+
+
+So when a user places a bid, they transfer their bid amount to the contract as well, so essentially, they make an STX transfer to the contract
+
+Finally, we said if the user won the bid, they can claim their win by providing some details, likewise, if they did not win, they can request refund on their bid amount.
+
+***SettleAuction.js & RequestRefund.js component***
+
+```javascript
+
+import React, { useCallback,useEffect, useState } from "react";
+import {  useConnect } from "@stacks/connect-react";
+import {  StacksMocknet } from "@stacks/network";
+import {
+  AnchorMode,
+  PostConditionMode,
+  NonFungibleConditionCode,
+  FungibleConditionCode,
+  bufferCVFromString,
+  createAssetInfo,
+  makeStandardNonFungiblePostCondition,
+  makeStandardSTXPostCondition,
+  standardPrincipalCV,
+  contractPrincipalCV,
+  StacksMessageType, 
+  uintCV,
+  callReadOnlyFunction  
+} from "@stacks/transactions";
+
+import { userSession } from "./ConnectWallet";
+// run npm i @use-it/interval
+import useInterval from "@use-it/interval";
+
+const SettleAuction = () => {
+  const { doContractCall } = useConnect();
+
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const [assetId, setAssetId] = useState("");
+  const [auctionId, setAuctionId] = useState(0);
+  const [bidersBid, setBidersBid] = useState(0);
+  const [highestBidAmount, setHighestBidAmount] = useState(0);
+  const handleAuctionIdChange = (e) =>{
+    setAuctionId(e.target.value)
+}
+  const handleAssetIdChange = (e) => {
+    setAssetId(e.target.value);
+  };
+
+const network = new StacksMocknet();
+// function to request refund
+const handleRequestRefund = async (e) =>{
+    e.preventDefault();
+    const address = assetId
+
+    // post condition values
+    const postConditionAddress = 
+    userSession.loadUserData().profile.stxAddress.testnet
+    const stxConditionCode = FungibleConditionCode.LessEqual
+    const assetContractName = 'sip009'
+    const stxConditionAmount = bidersBid
+    const functionArgs = [ 
+        contractPrincipalCV(
+            address,
+            assetContractName
+            ),
+        uintCV(auctionId),
+        ];
+       
+    // postconditions
+    const postConditions = [
+
+        makeStandardSTXPostCondition(
+            postConditionAddress,
+            stxConditionCode,
+            stxConditionAmount
+            )]
+    
+    const options = {
+        network,
+        anchorMode: AnchorMode.Any,
+        contractAddress: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+        contractName: "auction",
+        functionName: "request-refund",
+        functionArgs,
+        PostConditionMode: PostConditionMode.Deny,
+        postConditions,
+        appDetails: {
+            name: "Auction",
+            icon: window.location.origin + "/vercel.svg",
+        },
+        onFinish: (data) => {
+          window.alert("Refund request successful, wait for block confirmation to get your refund");
+            console.log("Stacks Transaction:", data.stacksTransaction);
+            console.log("Transaction ID:", data.txId);
+            console.log("Raw transaction:", data.txRaw);
+        },
+    }
+   
+     await doContractCall(options);
+
+}
+ // fetch bidder's bid
+ const getBidersBid = useCallback(async () => {
+
+  if (userSession.isUserSignedIn()) {
+    const userAddress = userSession.loadUserData().profile.stxAddress.testnet
+    const callOptions = {
+        contractAddress: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+        contractName: "auction",
+        functionName: "get-biders-total-bid",
+        network: new StacksMocknet(),
+        functionArgs: [standardPrincipalCV(
+          userAddress
+        )],
+       
+    };
+
+    const result = await callReadOnlyFunction(callOptions);
+    console.log(result);
+    if (result.value) {
+      setBidersBid(result.value)
+    }
+  }
+});
+// fetch Bider's Bid every second
+useInterval(getBidersBid, 10000);
+
+// function to claim win
+const handleClaimWin = async (e) => {
+    e.preventDefault();
+    const address = assetId
+
+    // post condition values
+    const postConditionAddress = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'  
+    const assetAddress = address
+    const postConditionCode = NonFungibleConditionCode.Sends;
+    const assetContractName = "sip009"
+    const assetName = 'auctionnfts'
+    const tokenAssetName = bufferCVFromString('auctionnfts')
+    const type = StacksMessageType.AssetInfo
+    const nonFungibleAssetInfo = createAssetInfo (
+        assetAddress,
+        assetContractName,
+        assetName,
+        type
+        )
+    const stxConditionCode = FungibleConditionCode.LessEqual;
+    const stxConditionAmount = highestBidAmount;
+
+    const functionArgs = [ 
+        contractPrincipalCV(
+            address,
+            assetContractName
+            ),
+        uintCV(auctionId),
+        ];
+       
+    // postconditions
+    const postConditions = [
+        makeStandardNonFungiblePostCondition(
+            postConditionAddress,
+            postConditionCode,
+            nonFungibleAssetInfo,
+            tokenAssetName
+            ),
+            makeStandardSTXPostCondition(
+                postConditionAddress,
+                stxConditionCode,
+                stxConditionAmount
+                )
+                            ];
+    
+    const options = {
+        network,
+        anchorMode: AnchorMode.Any,
+        contractAddress: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+        contractName: "auction",
+        functionName: "settle-auction",
+        functionArgs,
+        PostConditionMode: PostConditionMode.Deny,
+        postConditions,
+        appDetails: {
+            name: "Auction",
+            icon: window.location.origin + "/vercel.svg",
+        },
+        onFinish: (data) => {
+          window.alert("Win claim successful, wait for block confirmation to get your claim");
+            console.log("Stacks Transaction:", data.stacksTransaction);
+            console.log("Transaction ID:", data.txId);
+            console.log("Raw transaction:", data.txRaw);
+        },
+    }
+   
+     await doContractCall(options);
+   
+}
+
+ // fetch bider's bid
+ const getHeighestBidAmount = useCallback(async () => {
+
+  if (userSession.isUserSignedIn()) {
+    const userAddress = userSession.loadUserData().profile.stxAddress.testnet
+    const callOptions = {
+        contractAddress: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+        contractName: "auction",
+        functionName: "get-highest-bid-amount",
+        network: new StacksMocknet(),
+        functionArgs: [standardPrincipalCV(
+          userAddress
+        )],
+       
+    };
+
+    const result = await callReadOnlyFunction(callOptions);
+    console.log(result);
+    if (result.value) {
+      setBidersBid(result.value)
+    }
+  }
+});
+// fetch Heighest Bid Amount every second
+useInterval(getHeighestBidAmount, 10000);
+
+  if (!mounted || !userSession.isUserSignedIn()) {
+    return null;
+  }
 
   return (
+
     <div>
-      <NavBar />
-      <div className='py-16 '>
-            <div>
-                <h2 className='px-4 pb-6 font-bold text-xl'>
-                    Place a bid, the highest bidder gets the NFT
-                </h2>
-                <p className='px-4 pb-4'>
-                    Note: Once you place a bid, you can not widraw until the auction is over. <br/>
-                    However you can request a refund if you did not win the bid
-                </p>
-            </div>
 
-             {/*
-            implimentation of whitelist
-             */}
-            <Connect authOptions={authOption}>
-            < PlaceBid />
-            </Connect>
-
-      </div>
+    <form  className='lg:w-1/3 sm:w-2/3 '>
+                <div className=' flex items-center border border-gray-600 my-4 mx-4 rounded'>
+                    <div className='flex-shrink-0 bg-gray-600 text-gray-100 text-sm py-2 px-6'>
+                        Asset id  
+                    </div>
+                    <input 
+                    type="text" 
+                    value={assetId} 
+                    id='whiteListAssetId' 
+                    onChange={handleAssetIdChange} 
+                    placeholder="eg ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"  
+                    className='appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none' />
+                </div>
+                <div className=' flex items-center border border-gray-600 my-4 mx-4 rounded'>
+                    <div  className='flex-shrink-0 bg-gray-600 text-gray-100 text-sm py-2 px-6'>
+                        Auction-id  
+                    </div>
+                    <input onChange={handleAuctionIdChange} type='number' value={auctionId} placeholder='Enter the auction id of the bid' className='appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none' />
+                </div>
+            </form>
+            <div className='px-5 py-4 '>
+                    <button 
+                    onClick={handleClaimWin}
+                    type='button' 
+                    className='
+                    bg-gray-100 
+                    px-6 
+                    py-2 
+                    rounded-full 
+                    border 
+                    border-gray-600 
+                    hover:border-gray-100 
+                    hover:bg-gray-500 
+                    hover:text-gray-100 
+                    font-semibold
+                    mr-8'>
+                        Claim Win
+                    </button>
+                    <button 
+                    onClick={handleRequestRefund}
+                    type='button' 
+                    className='
+                    bg-gray-100 
+                    px-6 
+                    py-2 
+                    rounded-full 
+                    border 
+                    border-gray-600 
+                    hover:border-gray-100 
+                    hover:bg-gray-500 
+                    hover:text-gray-100 
+                    font-semibold
+                    ml-8'>
+                        Request Refund
+                    </button>
+                </div>
+                
     </div>
-  )
-}
+  );
+};
+
+export default SettleAuction;
 ```
+This is quite a lengthy one but what is going in is simple. We are exporting a component called SettleAuction, which has a couple of fuctions. The first function is the `handleRequestRefund`, it takes the asset identifier and auction id as inputs and requests a refund using the callers address to check for the callers bid amount. the `handleClaimWin function takes the same functions and transfers the NFT from the contract to the bid winner and the highest bid amount to the maker.
+
+
 Congratulations, you have created a full stack dapp for an NFT Auction place, this by no means is an implemetation that would be suitable for an enterprise solution. It is intended to serve as a mere example for illustrating how to use Clarity to create smart contract and stack.js to hook the smart contract to a frontend. If you found value, you can follow me on social @mosnyik. 
 Thank you for your time.

@@ -61,7 +61,7 @@
 (define-data-var bid-nonce uint u0)
 
 ;; variable to track highest-bid-amount
-(define-data-var highest-bid-amount uint u250 )
+(define-data-var highest-bid-amount uint u0 )
 
 ;; variable to hold the highest-bider principal
 (define-data-var highest-bider principal contract-owner )
@@ -77,9 +77,17 @@
 (var-get total-bids)
 )
 
-(define-read-only (get-biders-total-bid) 
-(var-get biders-total-bid)
+;; fetch the bider's total bid amount
+(define-read-only (get-biders-total-bid (who principal)) 
+    (let 
+        (
+            (bid (unwrap! (map-get? bids who) err-invalid-bider))
+        ) 
+        (ok (get biders-total-bid bid))
+    )
+   
 )
+
 
 ;; get the highest-bid-amount
 (define-read-only (get-highest-bid-amount) 
@@ -177,6 +185,8 @@
        (var-set highest-bid-amount (get bid-amount bid-details))
        ;; set highest-bider to tx-sender
        (var-set highest-bider tx-sender)
+       ;; set the biders bid value to the bid amount
+       (var-set biders-total-bid (get bid-amount bid-details))
        ;; update the total bids
        (var-set total-bids (+ (get bid-amount bid-details) (var-get total-bids)) )
        ;; update the bids map with the caller's bid-amount using thier principal as the key
@@ -192,7 +202,7 @@
         (
             (auction (unwrap! (map-get? auctions auction-id ) err-invalid-auction))
             (bid (unwrap! (map-get? bids tx-sender) err-invalid-bider))
-            ;;(taker tx-sender)
+            
         ) 
 
          ;; check if aucton have expired

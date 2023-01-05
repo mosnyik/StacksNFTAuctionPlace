@@ -8,7 +8,7 @@ import {
   bufferCVFromString,
   createAssetInfo,
   makeStandardNonFungiblePostCondition,
-  standardPrincipalCV,
+  contractPrincipalCV,
   StacksMessageType, 
   trueCV,  
 } from "@stacks/transactions";
@@ -31,12 +31,6 @@ const network = new StacksMocknet();
 const setWhitelistNFT = async (e) => {
     e.preventDefault();
     const address = assetWhitelist
-    const functionArgs = [ 
-      standardPrincipalCV(
-        assetWhitelist
-    ),
-    trueCV(),
-    ];
 
     // post condition values
     const postConditionAddress = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'  
@@ -52,6 +46,13 @@ const setWhitelistNFT = async (e) => {
         assetName,
         type
         )
+    const functionArgs = [ 
+          contractPrincipalCV(
+            address,
+            assetContractName
+            ),
+        trueCV(),
+        ];
        
     // postconditions
     const postConditions = [
@@ -77,8 +78,7 @@ const setWhitelistNFT = async (e) => {
             icon: window.location.origin + "/vercel.svg",
         },
         onFinish: (data) => {
-          window.alert("Contract Whitelisted, you can place a bid now");
-            // console.log(data)
+          window.alert("Contract Whitelisted, now you can create an auction after a block confirmation");
             console.log("Stacks Transaction:", data.stacksTransaction);
             console.log("Transaction ID:", data.txId);
             console.log("Raw transaction:", data.txRaw);
@@ -107,7 +107,7 @@ const setWhitelistNFT = async (e) => {
                     value={assetWhitelist} 
                     id='whiteListAssetId' 
                     onChange={handleAssetWhitelistChange} 
-                    placeholder="eg 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sip009"  
+                    placeholder="eg ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"  
                     className='appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none' />
                 </div>
                  <div className='px-5 py-4 '>
@@ -124,6 +124,4 @@ const setWhitelistNFT = async (e) => {
 
 export default WhitelistNFT;
 
-  // // construct principal clarity values
-  // const spCV = standardPrincipalCV(address);
-  // const cpCV = contractPrincipalCV(address, contractName);
+  

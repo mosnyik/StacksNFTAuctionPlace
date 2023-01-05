@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { openContractCall, useConnect, } from "@stacks/connect-react";
+import { useConnect, } from "@stacks/connect-react";
 import {
   AnchorMode,
   PostConditionMode,
@@ -8,7 +8,7 @@ import {
   bufferCVFromString,
   createAssetInfo,
   makeStandardNonFungiblePostCondition,
-  standardPrincipalCV,
+  contractPrincipalCV,
   StacksMessageType,
   tupleCV
 } from "@stacks/transactions";
@@ -35,8 +35,6 @@ const CreateAuction = () => {
     const [auctionContractAddress, setAuctionContractAddress] = useState(
         "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"
     );
-    // const assetName = "auctionnft";
-    // const contractName = "sip009";
 
     const network = new StacksMocknet();
 
@@ -59,21 +57,15 @@ const CreateAuction = () => {
   const createAuction= async (event) => {
     event.preventDefault();
     const address = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"
-   
-    const functionArgs = [ 
-        standardPrincipalCV(assetId),
-        tupleCV({
-          tokenId: uintCV(tokenId), 
-          startPrice: uintCV(startPrice * 1000000), 
-          auctionDuration: uintCV(auctionDuration),})
-    ];
-
+  
     const assetAddress = address
-    const postConditionAddress = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'
+    const postConditionAddress = 
+        userSession.loadUserData().profile.stxAddress.testnet
+    // const postConditionAddress = auctionContractAddress
     const nftPostConditionCode = NonFungibleConditionCode.Sends;
     const assetContractName = 'sip009'
-    const assetName = 'auctionnft'
-    const tokenAssetName = bufferCVFromString('auctionnft')
+    const assetName = 'auctionnfts'
+    const tokenAssetName = bufferCVFromString('auctionnfts')
     const type = StacksMessageType.AssetInfo
     const nonFungibleAssetInfo = createAssetInfo(
             assetAddress,
@@ -81,6 +73,19 @@ const CreateAuction = () => {
             assetName,
             type
     )
+   
+
+    const functionArgs = [ 
+      
+      contractPrincipalCV(
+          address,
+          assetContractName
+          ),
+      tupleCV({
+        "token-id": uintCV(tokenId), 
+        "start-price": uintCV(startPrice * 1000000), 
+        "expiry": uintCV(auctionDuration),})
+  ];
   
     const postConditions = [
         makeStandardNonFungiblePostCondition(
@@ -93,25 +98,25 @@ const CreateAuction = () => {
     ]
     
     const options = {
-        network,
-        anchorMode: AnchorMode.Any,
-        contractAddress: auctionContractAddress ,
-        contractName: "auction",
-        functionName: "create-auction",
-        functionArgs,
-        postConditionMode: PostConditionMode.Deny,
-        postConditions,
-        appDetails: {
-            name: "Auction",
-            icon: window.location.origin + "/vercel.svg",
-        },
-        onFinish: (data) => {
-            // console.log(data)
-            console.log("Stacks Transaction:", data.stacksTransaction);
-            console.log("Transaction ID:", data.txId);
-            console.log("Raw transaction:", data.txRaw);
-        },
-    }
+      network,
+      anchorMode: AnchorMode.Any,
+      contractAddress: "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM",
+      contractName: "auction",
+      functionName: "create-auction",
+      functionArgs,
+       PostConditionMode: PostConditionMode.Deny,
+       postConditions,
+      appDetails: {
+          name: "Auction",
+          icon: window.location.origin + "/vercel.svg",
+      },
+      onFininsh: (data) => {
+          window.alert("Auction create successfully");
+          console.log("Stacks Transaction:", data.stacksTransaction);
+          console.log("Transaction ID:", data.txId);
+          console.log("Raw transaction:", data.txRaw);
+      }
+  }
     await doContractCall(options);
   };
 
@@ -126,7 +131,7 @@ const CreateAuction = () => {
                 <div className='flex-shrink-0 bg-gray-600 text-gray-100 text-sm py-2 px-6'>
                     Asset id  
                 </div>
-                <input type="text" value={assetId} id='assetId' onChange={handleAssetIdChange} placeholder="eg 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.sip009"  className='appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none' />
+                <input type="text" value={assetId} id='assetId' onChange={handleAssetIdChange} placeholder="eg ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"  className='appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none' />
             </div>
             
             <div className=' flex items-center border border-gray-600 my-4 mx-4 rounded'>

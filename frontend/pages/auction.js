@@ -3,12 +3,9 @@ import { Connect, } from "@stacks/connect-react";
 import {
     AppConfig,
     UserSession,
-    openContractCall,
 } from "@stacks/connect";
 
-// import { StacksMocknet } from "@stacks/network";
 
-import { useState, useEffect} from 'react';
 import WhitelistNFT from '../components/Whitelist';
 import CreateAuction from '../components/CreateAuction';
 
@@ -24,31 +21,6 @@ export default function Home() {
             redirectTo: '/',
             userSession: userSession,
           }
-  
-
-//     const [userData, setUserData] = useState({});
-//     const [loggedIn, setLoggedIn] = useState(false);
-   
-//     const authOption = {
-//         appDetails: {
-//           name: 'auction',
-//           icon: 'https://assets.website-files.com/618b0aafa4afde65f2fe38fe/618b0aafa4afde2ae1fe3a1f_icon-isotipo.svg',
-//         },
-//         redirectTo: '/',
-//         userSession: userSession,
-//       }
-
-// useEffect(() => {
-//     if (userSession.isSignInPending()) {
-//       userSession.handlePendingSignIn().then((userData) => {
-//         setUserData(userData)
-//       })
-//     } else if (userSession.isUserSignedIn()) {
-//       setLoggedIn(true)
-//       setUserData(userSession.loadUserData())
-      
-//     }
-//   }, [])
 
   return (
     <div>

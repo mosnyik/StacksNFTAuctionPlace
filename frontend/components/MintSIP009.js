@@ -36,8 +36,7 @@ const MintNFT = () => {
                 icon: 'https://assets.website-files.com/618b0aafa4afde65f2fe38fe/618b0aafa4afde2ae1fe3a1f_icon-isotipo.svg',
             },
             onFinish: (data) => {
-                // console.log(data)
-                window.alert(`NFT minted successfully`)
+                window.alert("NFT mint successful, you can whitelist the NFT now, then create an auction");
                 console.log("Stacks Transaction:", data.stacksTransaction);
                 console.log("Transaction ID:", data.txId);
                 console.log("Raw transaction:", data.txRaw);
@@ -57,55 +56,3 @@ const MintNFT = () => {
 }
  
 export default MintNFT;
-
-// const functionArgs = [ 
-    //     stringUtf8CV(assetId), 
-    //     uintCV(tokenId), 
-    //     uintCV(startPrice * 1000000), 
-    //     uintCV(auctionDuration),
-    // ];
-
-    // const postConditionAddress = 'ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM'
-    // const nftPostConditionCode = NonFungibleConditionCode.Sends;
-    // const assetContractName = 'sip009'
-    // const assetName = 'auctionnft'
-    // const assetAddress = "ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM"
-    // const tokenAssetName = bufferCVFromString('auctionnft')
-    // const nonFungibleAssetInfo = createAssetInfo(
-    //         assetAddress,
-    //         assetContractName,
-    //         assetName
-    // )
-
-    // const postConditions = [
-    //     makeStandardNonFungiblePostCondition(
-    //         postConditionAddress,
-    //         nftPostConditionCode,
-    //         nonFungibleAssetInfo,
-    //         tokenAssetName
-    //         ),
-        
-    // ]
-    
-  //   const options = {
-  //       network,
-  //       anchorMode: AnchorMode.Any,
-  //       contractAddress: auctionContractAddress ,
-  //       contractName: "auction",
-  //       functionName: "create-auction",
-  //       functionArgs,
-  //       postConditionMode: PostConditionMode.Deny,
-  //       // postConditions,
-        
-  //       appDetails: {
-  //           name: "Auction",
-  //           icon: window.location.origin + "/vercel.svg",
-  //       },
-  //       onFinish: (data) => {
-  //           // console.log(data)
-  //           console.log("Stacks Transaction:", data.stacksTransaction);
-  //           console.log("Transaction ID:", data.txId);
-  //           console.log("Raw transaction:", data.txRaw);
-  //       },
-  //   }
-  //  const tx = await doContractCall(options);
