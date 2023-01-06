@@ -22,6 +22,7 @@ const WhitelistNFT = () => {
   useEffect(() => setMounted(true), []);
 
   const [assetWhitelist, setAssetWhitelist] = useState("");
+  
   const handleAssetWhitelistChange = (e) => {
     setAssetWhitelist(e.target.value);
   };

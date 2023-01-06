@@ -60,8 +60,11 @@ const CreateAuction = () => {
   
     const assetAddress = address
     const postConditionAddress = 
+    // contractPrincipalCV(
+    //   address,
+    //   'auction'
+    //   )
         userSession.loadUserData().profile.stxAddress.testnet
-    // const postConditionAddress = auctionContractAddress
     const nftPostConditionCode = NonFungibleConditionCode.Sends;
     const assetContractName = 'sip009'
     const assetName = 'auctionnfts'

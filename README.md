@@ -960,6 +960,14 @@ export default function Home() {
 Now let's create a components folder inside our fronend folder inside which we would create
 *NavBar.js* and paste the following codes.
 
+If you try running 
+```shell
+npm run dev
+```
+it would yell at you about the components not created, so we would create the components.
+
+Note: If you run `npm run dev` later and you see get an error about not being able to find the `regenerator-runtime` package, run` npm i regenerator-runtime` and it should be fixed.
+
 ***NavBar.js component***
 
 ```javascript
@@ -1939,7 +1947,7 @@ useInterval(getHeighestBidAmount, 10000);
 
 export default SettleAuction;
 ```
-This is quite a lengthy one but what is going in is simple. We are exporting a component called SettleAuction, which has a couple of fuctions. The first function is the `handleRequestRefund`, it takes the asset identifier and auction id as inputs and requests a refund using the callers address to check for the callers bid amount. the `handleClaimWin function takes the same functions and transfers the NFT from the contract to the bid winner and the highest bid amount to the maker.
+This is quite a lengthy one but what is going in is simple. We are exporting a component called SettleAuction, which has a couple of fuctions. The first function is the `handleRequestRefund`, it takes the asset identifier and auction id as inputs and requests a refund using the callers address to check for the callers bid amount. the `handleClaimWin` function takes the same functions and transfers the NFT from the contract to the bid winner and the highest bid amount to the maker.
 
 
 Congratulations, you have created a full stack dapp for an NFT Auction place, this by no means is an implemetation that would be suitable for an enterprise solution. It is intended to serve as a mere example for illustrating how to use Clarity to create smart contract and stack.js to hook the smart contract to a frontend. If you found value, you can follow me on social @mosnyik. 
